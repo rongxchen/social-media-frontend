@@ -30,14 +30,14 @@ axios.interceptors.request.use(
 
 const url = store.getters.url;
 const refreshToken = async () => {
-    const REFRESH_TOKEN_URL = url + "/api/users/token";
+    const REFRESH_TOKEN_URL = url + "/api/users/refresh-token";
     let refreshToken = localStorage.getItem("refreshToken");
     // obtain new token
     return await axios.get(REFRESH_TOKEN_URL, {
         headers: {'refresh-token': "Bearer " + refreshToken}
     }).then((res) => {
-        if (res.data.code === 200) {
-            let token = res.data.data;
+        if (res.data.code === 0) {
+            let token = res.data.data.accessToken;
             refreshTokenRetry = false;
             return token;
         }
@@ -59,6 +59,7 @@ axios.interceptors.response.use((response) => {
             localStorage.removeItem("userInfo");
             return Promise.reject(error);
         }
+        console.log(accessToken);
         localStorage.setItem("accessToken", accessToken);
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
         return axios(originalRequest);

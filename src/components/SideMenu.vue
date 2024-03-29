@@ -2,7 +2,7 @@
     <div class="side-menu">
         <!-- avatar -->
         <div class="avatar">
-            <el-avatar size="large" :src="user.avatar=='' ? '': user.avatar"></el-avatar>
+            <el-avatar size="large" :src="user.avatar"></el-avatar>
             <p :style="{'color': greyColor, 'font-weight': '700', 'margin-top': '15px'}"
                 v-text="'Hello ' + (user.username.length >= 10?
                     user.username.substring(0, 10)+'...': user.username)">
