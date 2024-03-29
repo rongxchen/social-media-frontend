@@ -1,0 +1,108 @@
+<template>
+    <div class="side-menu">
+        <!-- avatar -->
+        <div class="avatar">
+            <el-avatar size="large" :src="user.avatar=='' ? '': user.avatar"></el-avatar>
+            <p :style="{'color': greyColor, 'font-weight': '700', 'margin-top': '15px'}"
+                v-text="'Hello ' + (user.username.length >= 10?
+                    user.username.substring(0, 10)+'...': user.username)">
+            </p>
+        </div>
+        <!-- side menu -->
+        <el-menu
+            :default-active="currentRoute"
+            mode="vertical"
+            style="border: none;"
+            @select="handleSelect"
+        >
+            <el-menu-item index="/home">
+                <el-icon><ChatLineSquare /></el-icon>
+                <template #title>Home</template>
+            </el-menu-item>
+
+            <el-menu-item index="/profile">
+                <el-icon><User /></el-icon>
+                <template #title>Profile</template>
+            </el-menu-item>
+        </el-menu>
+        <!-- logout -->
+        <div class="logout-button">
+            <el-switch
+                v-model="isDark"
+                size="large"
+                :active-action-icon="icons.moonIcon"
+                :inactive-action-icon="icons.sunIcon"
+                inline-prompt
+                @change="switchThemes()"
+                style="margin-bottom: 30px;"
+            />
+            <el-button @click="logout" type="danger">Log out</el-button>
+        </div>
+    </div>
+</template>
+
+<script>
+import store from "@/store";
+import { markRaw } from "vue";
+import { useToggle } from '@vueuse/core';
+import { Sunny, Moon } from '@element-plus/icons-vue'
+
+export default {
+    name: "SideMenu",
+    setup() {
+        return {
+        }
+    },
+    data() {
+        return {
+            user: {username: ""},
+            currentRoute: "/profile",
+            isDark: store.getters.theme,
+            greyColor: store.getters.greyColor,
+            icons: {moonIcon: markRaw(Moon), sunIcon: markRaw(Sunny)},
+        }
+    },
+    methods: {
+        getUserInfo() {
+            this.user = JSON.parse(localStorage.getItem("userInfo")) || {};
+        },
+        switchThemes() {
+            useToggle(this.isDark);
+            this.$store.commit("changeTheme");
+        },
+        handleSelect(key) {
+            this.$router.push(key);
+        },
+        logout() {
+            if (store.getters.socket) {
+                store.getters.socket.disconnect();
+            }
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("userInfo");
+            this.$router.push("/login");
+        }
+    },
+    mounted() {
+        this.getUserInfo();
+        this.currentRoute = (this.$route.path == "/" || this.$route.path == "/login")? "/login": this.$route.path;
+    }
+}
+</script>
+
+<style>
+.side-menu {
+    margin-top: 30px;
+}
+.avatar {
+    display: grid;
+    place-items: center;
+    margin-bottom: 10px;
+}
+.logout-button {
+    display: grid;
+    place-items: center;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+</style>
