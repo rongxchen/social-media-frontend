@@ -24,7 +24,7 @@
                                     <!-- username -->
                                     <div class="profile-desc-name"> 
                                         {{ user.username }} 
-                                        <el-tag v-if="user.sex != null && user.sex != '' && user.sex != 'N/A'" type="info">
+                                        <el-tag style="background-color: transparent; border: none;" v-if="user.sex != null && user.sex != '' && user.sex != 'N/A'">
                                             <div v-if="user.sex == 'M'">
                                                 <el-icon style="background-color: lightblue;"><Male /></el-icon>
                                             </div>
@@ -166,7 +166,6 @@ export default {
         }
     },
     mounted() {
-        console.log(this.user);
     }
 }
 </script>

@@ -1,7 +1,11 @@
 <template>
     <el-card class="post-card">
         <!-- post image -->
-        <img class="post-img" :src="postInfo.imageUrl"/>
+        <el-carousel :interval="5000" arrow="always">
+            <el-carousel-item v-for="imageUrl in postInfo.imageList" :key="imageUrl">
+                <img class="post-img" :src="imageUrl"/>
+            </el-carousel-item>
+        </el-carousel>
         <!-- post title -->
         <div class="card-title"> {{ postInfo.title }} </div>
         <div class="card-bottom">
@@ -49,6 +53,8 @@ export default {
                 store.getters.likeMap.set(this.postInfo.postId, 1);
             }
         }
+    },
+    mounted() {
     }
 }
 </script>

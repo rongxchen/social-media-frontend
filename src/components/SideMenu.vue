@@ -20,6 +20,11 @@
                 <template #title>Home</template>
             </el-menu-item>
 
+            <el-menu-item index="/add-post">
+                <el-icon><Plus /></el-icon>
+                <template #title>Add Post</template>
+            </el-menu-item>
+
             <el-menu-item index="/profile">
                 <el-icon><User /></el-icon>
                 <template #title>Profile</template>

@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from "vue-router";
 import LoginPage from "../pages/LoginPage.vue";
 import HomePage from "../pages/HomePage.vue";
+import AddPostPage from "../pages/AddPostPage.vue";
 import ProfilePage from "../pages/ProfilePage.vue";
 import NotFoundPage from "../pages/error/NotFoundPage.vue";
 
@@ -17,6 +18,12 @@ const routes = [
     name: "home",
     component: HomePage,
     meta: {title: "home"}
+  },
+  {
+    path: "/add-post",
+    name: "add-post",
+    component: AddPostPage,
+    meta: {title: "add-post"}
   },
   {
     path: "/profile",
