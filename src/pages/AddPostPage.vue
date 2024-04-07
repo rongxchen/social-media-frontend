@@ -95,8 +95,8 @@ export default {
         return {
             fileList: [],
             uploadPost: { 
-                title: "a",
-                content: "a",
+                title: "",
+                content: "",
                 tags: []
             },
             previewImageDialog: false,
@@ -152,6 +152,7 @@ export default {
                             this.$message.success(res.data.data);
                             this.$message.success("post published");
                             this.uploadPost = {};
+                            this.fileList = [];
                         } else {
                             this.$message.error(res.data.message);
                         }

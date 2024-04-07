@@ -25,13 +25,6 @@
 <script>
 import PostCard from "./PostCard.vue"; 
 
-const post = {
-                postId: "1",
-                title: "hello from post tabs 我要笑死了哈哈哈hello from post tabs 我要笑死了哈哈哈", imageUrl: "https://epiphany571storage.blob.core.windows.net/public/users/avatar/38a8b8e6-49a4-4ef1-b2fe-f924e0458102.jpg",
-                likeCount: 100, authorName: "marry", authorAvatar: "https://epiphany571storage.blob.core.windows.net/public/users/avatar/38a8b8e6-49a4-4ef1-b2fe-f924e0458102.jpg",
-
-            };
-
 export default {
     components: {
         PostCard
@@ -44,13 +37,14 @@ export default {
                 {"label": "Favorites", "value": "favorite"},
                 {"label": "Likes", "value": "like"}
             ],
-            tabDataList: {post: [post, post, post], favorite: [], like: []},
+            tabDataList: {post: [], favorite: [], like: []},
         }
     },
     methods: {
         handleTabClick(val) {
             const tab = val.props.name;
             console.log(tab);
+            
         }
     },
     mounted() {
