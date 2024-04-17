@@ -1,5 +1,5 @@
 <template>
-    <el-card class="post-card">
+    <el-card @click="openPostDetail" class="post-card">
         <!-- post image -->
         <img class="post-img" :src="postInfo.imageList[0]"/>
         <div class="post-container">
@@ -80,7 +80,11 @@ export default {
         },
         deletePost() {
             this.$emit("deletePost", this.postInfo.postId);
-        }
+        },
+        openPostDetail() {
+            this.$router.push("/post?postId=" + this.postInfo.postId);
+            // window.open("/post?postId=" + this.postInfo.postId, "_blank");
+        },
     },
     mounted() {
         this.userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};

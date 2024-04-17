@@ -149,7 +149,6 @@ export default {
                         headers: {'Content-Type': 'multipart/form-data'}
                     }).then((res) => {
                         if (res.data.code == 0) {
-                            this.$message.success(res.data.data);
                             this.$message.success("post published");
                             this.uploadPost = {};
                             this.fileList = [];
