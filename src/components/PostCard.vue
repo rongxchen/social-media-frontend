@@ -1,13 +1,13 @@
 <template>
-    <el-card @click="openPostDetail" class="post-card">
+    <el-card class="post-card">
         <!-- post image -->
-        <img class="post-img" :src="postInfo.imageList[0]"/>
+        <img @click="openPostDetail" class="post-img" :src="postInfo.imageList[0]"/>
         <div class="post-container">
             <!-- post title -->
-            <div class="card-title"> {{ postInfo.title }} </div>
+            <div @click="openPostDetail" class="card-title"> {{ postInfo.title }} </div>
             <div class="card-bottom">
                 <!-- post author -->
-                <div class="card-author"> 
+                <div @click="openPostDetail" class="card-author"> 
                     <!-- avatar -->
                     <el-avatar :size="24" :src="postInfo.authorAvatar"></el-avatar>
                     <!-- author name -->
@@ -19,8 +19,10 @@
                 <div class="card-bottom-right">
                     <!-- like button and like count -->
                     <div class="card-like-icon">
-                        <el-button @click="likePost" :style="{'color': this.$store.getters.likeMap.has(postInfo.postId) ? 
-                            'red': '', 'border': 'none'}" 
+                        <el-button @click="likePost" 
+                            :style="{
+                                'color': this.postInfo && this.$store.getters.likeMap.has(this.postInfo.postId) ? 'red': '', 
+                                'border': 'none',}"
                             size="small" :icon="this.$store.getters.likeMap.has(postInfo.postId) ? 
                                 icons.liked : icons.notLiked"
                         ><span class="card-like-likes"> {{ postInfo.likeCount }} </span>
@@ -62,28 +64,27 @@ import { HeartOutlined, HeartFilled } from "@ant-design/icons-vue";
 
 export default {
     props: ["post"],
-    emits: ["deletePost"],
+    emits: ["likePost", "deletePost", "openPostDrawer"],
     data() {
         return {
             userInfo: {},
             postInfo: this.post,
-            icons: {liked: HeartFilled, notLiked: HeartOutlined}
+            icons: {liked: HeartFilled, notLiked: HeartOutlined},
+            checkLikedStyle: {
+                'color': this.postInfo && store.getters.likeMap.has(this.postInfo.postId) ? 'red': '', 
+                'border': 'none',
+            }
         }
     },
     methods: {
         likePost() {
-            if (store.getters.likeMap.has(this.postInfo.postId)) {
-                store.getters.likeMap.delete(this.postInfo.postId);
-            } else {
-                store.getters.likeMap.set(this.postInfo.postId, 1);
-            }
+            this.$emit("likePost");
         },
         deletePost() {
             this.$emit("deletePost", this.postInfo.postId);
         },
         openPostDetail() {
-            this.$router.push("/post?postId=" + this.postInfo.postId);
-            // window.open("/post?postId=" + this.postInfo.postId, "_blank");
+            this.$emit("openPostDrawer", this.postInfo);
         },
     },
     mounted() {

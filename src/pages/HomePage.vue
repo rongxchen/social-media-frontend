@@ -17,7 +17,9 @@
                                 class="post-container"
                                 v-for="i in Math.ceil(posts.length/2)" :key="i"
                                 :post="posts[(i-1)*2]"
+                                @like-post="likePost(posts[(i-1)*2])"
                                 @delete-post="deletePost"
+                                @open-post-drawer="openCurrPostDetail"
                             ></PostCard>
                         </div>
                         <div class="posts-container">
@@ -25,9 +27,22 @@
                                 class="post-container"
                                 v-for="i in Math.floor(posts.length/2)" :key="i"
                                 :post="posts[i*2-1]"
+                                @like-post="likePost(posts[i*2-1])"
                                 @delete-post="deletePost"
+                                @open-post-drawer="openCurrPostDetail"
                             ></PostCard>
                         </div>
+                    </div>
+                    <!-- post detail container -->
+                    <div style="width: 100%;">
+                        <el-drawer v-model="postDetailDrawer.visible" size="60%" :with-header="false">
+                            <div class="post-detail-container">
+                                <PostDetailContainer
+                                    :curr-post="postDetailDrawer.currPost"
+                                    @close-drawer="() => {this.postDetailDrawer.visible = false;}"
+                                ></PostDetailContainer>
+                            </div>
+                        </el-drawer>
                     </div>
                 </div>
             </div>
@@ -39,6 +54,7 @@
 import store from "@/store";
 import SideMenu from "../components/SideMenu.vue";
 import PostCard from "../components/PostCard.vue";
+import PostDetailContainer from "../components/PostDetailContainer.vue";
 import axios from "axios";
 
 const url = store.getters.url;
@@ -48,12 +64,17 @@ export default {
     components: {
         SideMenu,
         PostCard,
+        PostDetailContainer,
     },
     data() {
         return {
             posts: [],
             pagination: {
                 currPage: 1,
+            },
+            postDetailDrawer: {
+                visible: false,
+                currPost: {}
             }
         }
     },
@@ -61,6 +82,27 @@ export default {
         getPosts() {
             axios.get(url + "/api/posts?page=" + this.pagination.currPage).then((res) => {
                 this.posts = this.posts.concat(res.data.data);
+            })
+        },
+        openCurrPostDetail(post) {
+            this.postDetailDrawer.currPost = post;
+            this.postDetailDrawer.visible = true;
+        },
+        likePost(post) {
+            let action;
+            if (store.getters.likeMap.has(post.postId)) {
+                post.likeCount --;
+                store.getters.likeMap.delete(post.postId);
+                action = "dislike";
+            } else {
+                post.likeCount ++;
+                store.getters.likeMap.set(post.postId, 1);
+                action = "like";
+            }
+            axios.post(url + "/api/posts/like-post?postId=" + post.postId + "&action=" + action).then((res) => {
+                if (res.data.code === 0 && !res.data.data) {
+                    this.$message.error("failed");
+                }
             })
         },
         deletePost(postId) {
@@ -75,10 +117,21 @@ export default {
                     this.$message.error(res.data.message);
                 }
             })
+        },
+        async getLikesRecord() {
+            await axios.get(url + "/api/posts/likes-record").then((res) => {
+                if (res.data.code === 0) {
+                    const data = res.data.data;
+                    store.commit("resetLikeMap", data);
+                }
+            })
         }
     },
-    mounted() {
+    async mounted() {
         this.getPosts();
+        if (store.getters.likeMap == null) {
+            await this.getLikesRecord();
+        }
     }
 }
 </script>
@@ -103,5 +156,9 @@ export default {
 }
 .post-container {
     margin-bottom: 20px;
+}
+.post-detail-container {
+    margin-left: 5%;
+    margin-right: 5%;
 }
 </style>

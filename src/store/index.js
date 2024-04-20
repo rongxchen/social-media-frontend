@@ -6,7 +6,7 @@ export default createStore({
     url: "http://localhost:8080",
     theme: useDark(),
     greyColor: "#888888",
-    likeMap: new Map(),
+    likeMap: null,
     currPost: {},
   },
   getters: {
@@ -22,6 +22,12 @@ export default createStore({
     },
     changeCurrPost(state, post) {
       state.currPost = post;
+    },
+    resetLikeMap(state, likeMap) {
+      state.likeMap = new Map();
+      Object.keys(likeMap).forEach(k => {
+        state.likeMap.set(k, 1);
+      })
     }
   },
   actions: {

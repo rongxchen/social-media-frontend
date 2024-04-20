@@ -53,9 +53,15 @@
                         <!-- follows and followers -->
                         <el-descriptions-item label="">
                             <div class="profile-desc-follow">
-                                <el-link> {{ 'Follows' }} </el-link>
-                                <el-link> {{ 'Followers' }} </el-link>
-                                <el-button @click="openModifyInfoDialog" style="border: none;" :round="true">Modify Info</el-button>
+                                <el-button style="border: none;" round> 
+                                    {{ 0 + ' Follows' }} 
+                                </el-button>
+                                <el-button style="border: none;" round> 
+                                    {{ 0 + ' Followers' }} 
+                                </el-button>
+                                <el-button style="border: none;" @click="openModifyInfoDialog" round>
+                                    Modify Info
+                                </el-button>
                             </div>
                         </el-descriptions-item>
                     </el-descriptions>
@@ -147,6 +153,14 @@ export default {
         updateInfo() {
             this.$refs.modifyInfoFormRef.validate((valid) => {
                 if (valid) {
+                    if (this.modifyInfoForm.birthday) {
+                        const date = this.modifyInfoForm.birthday;
+                        const year = date.getFullYear();
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const birthday = `${year}-${month}-${day}`;
+                        this.modifyInfoForm.birthday = birthday;
+                    }
                     axios.put(url + "/api/users", this.modifyInfoForm).then((res) => {
                         if (res.data.code == 0) {
                             this.$message.success(res.data.message);
@@ -163,9 +177,20 @@ export default {
                     this.$message.warning("check your inputs");
                 }
             })
+        },
+        async getLikesRecord() {
+            await axios.get(url + "/api/posts/likes-record").then((res) => {
+                if (res.data.code === 0) {
+                    const data = res.data.data;
+                    store.commit("resetLikeMap", data);
+                }
+            })
         }
     },
-    mounted() {
+    async mounted() {
+        if (store.getters.likeMap == null) {
+            await this.getLikesRecord();
+        }
     }
 }
 </script>

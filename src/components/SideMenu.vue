@@ -15,20 +15,35 @@
             style="border: none;"
             @select="handleSelect"
         >
-            <el-menu-item index="/home">
-                <el-icon><ChatLineSquare /></el-icon>
-                <template #title>Home</template>
-            </el-menu-item>
-
-            <el-menu-item index="/add-post">
-                <el-icon><Plus /></el-icon>
-                <template #title>Add Post</template>
-            </el-menu-item>
-
-            <el-menu-item index="/profile">
-                <el-icon><User /></el-icon>
-                <template #title>Profile</template>
-            </el-menu-item>
+        <div v-for="route in routes" :key="route">
+                <!-- if has submenu -->
+                <el-sub-menu v-if="route.children && route.children.length > 0" :index="route.path">
+                    <template #title>
+                        <el-icon>
+                            <component :is="route.icon"></component>
+                        </el-icon>
+                        {{ route.label }}
+                    </template>
+                    <!-- sub menus -->
+                    <el-menu-item v-for="sub in route.children" :index="sub.path" :key="sub">
+                        <template #title>
+                            <el-icon>
+                                <component :is="sub.icon"></component>
+                            </el-icon>
+                            {{ sub.label }}
+                        </template>
+                    </el-menu-item>
+                </el-sub-menu>
+                <!-- if not -->
+                <el-menu-item v-else :index="route.path">
+                    <template #title>
+                        <el-icon>
+                            <component :is="route.icon"></component>
+                        </el-icon>
+                        {{ route.label }}
+                    </template>
+                </el-menu-item>
+            </div>
         </el-menu>
         <!-- logout -->
         <div class="logout-button">
@@ -62,6 +77,23 @@ export default {
         return {
             user: {username: ""},
             currentRoute: "/profile",
+            routes: [
+                {
+                    path: "/home",
+                    label: "Home",
+                    icon: "ChatLineSquare"
+                },
+                {
+                    path: "/add-post",
+                    label: "Add Post",
+                    icon: "Plus"
+                },
+                {
+                    path: "/profile",
+                    label: "Profile",
+                    icon: "User"
+                }
+            ],
             isDark: store.getters.theme,
             greyColor: store.getters.greyColor,
             icons: {moonIcon: markRaw(Moon), sunIcon: markRaw(Sunny)},

@@ -59,7 +59,6 @@ axios.interceptors.response.use((response) => {
             localStorage.removeItem("userInfo");
             return Promise.reject(error);
         }
-        console.log(accessToken);
         localStorage.setItem("accessToken", accessToken);
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
         return axios(originalRequest);
