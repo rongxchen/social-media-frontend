@@ -53,40 +53,40 @@
                     <el-form
                         ref="registerFormRef"
                         :model="registerForm"
+                        :inline="true"
                         status-icon
                         :rules="registerRules"
                         label-position="top"
                         label-width="auto"
                         size="small"
                     >
-                        <el-form-item prop="email" label="Email">
+                        <el-form-item class="reg-form-item" prop="email" label="Email">
                             <el-input v-model="registerForm.email" clearable></el-input>
                         </el-form-item>
-                        <el-form-item prop="username" label="Username">
+                        <el-form-item class="reg-form-item" prop="username" label="Username">
                             <el-input v-model="registerForm.username" clearable></el-input>
                         </el-form-item>
-                        <el-form-item prop="password" label="Password">
+                        <el-form-item class="reg-form-item" prop="password" label="Password">
                             <el-input v-model="registerForm.password" type="password" clearable></el-input>
                         </el-form-item>
-                        <el-form-item prop="checkPassword" label="Confirm password">
+                        <el-form-item class="reg-form-item" prop="checkPassword" label="Confirm password">
                             <el-input v-model="registerForm.checkPassword" type="password" clearable></el-input>
                         </el-form-item>
-                        <el-form-item prop="code" label="Code">
+                        <el-form-item class="reg-form-item" prop="code" label="Code">
                             <el-input v-model="registerForm.code">
                                 <template #append>
                                     <el-button @click="sendVerificationCode" :disabled="isButtonDisabled">{{ buttonLabel }}</el-button>
                                 </template>
                             </el-input>
                         </el-form-item>
-                        <el-form-item>
-                            <div>
-                                <a-spin :spinning="registerLoading">
-                                    <el-button @click="register" class="register-button-single" type="warning">Register</el-button>
-                                    <el-button @click="changeForm('login')" class="register-button-single" type="primary">Back</el-button>
-                                </a-spin>
-                            </div>
-                        </el-form-item>
                     </el-form>
+                    <!-- register button -->
+                    <div>
+                        <a-spin :spinning="registerLoading">
+                            <el-button @click="register" class="register-button-single" type="warning">Register</el-button>
+                            <el-button @click="changeForm('login')" class="register-button-single" type="primary">Back</el-button>
+                        </a-spin>
+                    </div>
                 </el-card>
                 <!-- send reset password -->
                 <el-card id="forgot-form" class="login-form">
@@ -105,7 +105,7 @@
                         <el-form-item>
                             <div>
                                 <a-spin :spinning="forgotLoading">
-                                    <el-button @click="sendForgotEmail" class="register-button-single" type="warning">Send mail</el-button>
+                                    <el-button @click="sendForgotEmail" class="register-button-single" type="warning">Send</el-button>
                                     <el-button @click="changeForm('login')" class="register-button-single" type="primary">Back</el-button>
                                 </a-spin>
                             </div>
@@ -385,10 +385,12 @@ export default {
     justify-content: center;
 }
 .register-form {
-    width: 380px;
-    height: 500px;
+    width: 550px;
 }
 .register-button-single {
     width: 80px
+}
+.reg-form-item {
+    width: 40%;
 }
 </style>

@@ -70,10 +70,12 @@
                         </el-select>
                     </el-form-item>
                 </el-form>
-                <el-button @click="publishPost" type="primary" round plain>
-                    <el-icon><upload /></el-icon>
-                    Publish
-                </el-button>
+                <a-spin :spinning="uploadPostLoading">
+                    <el-button @click="publishPost" type="primary" round plain>
+                        <el-icon><upload /></el-icon>
+                        Publish
+                    </el-button>
+                </a-spin>
             </div>
         </el-aside>
     </el-container>
@@ -99,6 +101,7 @@ export default {
                 content: "",
                 tags: []
             },
+            uploadPostLoading: false,
             previewImageDialog: false,
             previewingImage: "",
             uploadPostRules: {
@@ -140,6 +143,7 @@ export default {
                     }
                 }
                 if (valid) {
+                    this.uploadPostLoading = true;
                     const formData = new FormData();
                     for (const file of this.fileList) {
                         formData.append('files', file.raw);
@@ -155,6 +159,7 @@ export default {
                         } else {
                             this.$message.error(res.data.message);
                         }
+                        this.uploadPostLoading = false;
                     })
                 } else {
                     this.$message.warning("check your input");

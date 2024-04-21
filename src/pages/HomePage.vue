@@ -39,6 +39,8 @@
                             <div class="post-detail-container">
                                 <PostDetailContainer
                                     :curr-post="postDetailDrawer.currPost"
+                                    @like-post="likePost(postDetailDrawer.currPost)"
+                                    @favorite-post="favoritePost(postDetailDrawer.currPost)"
                                     @close-drawer="() => {this.postDetailDrawer.visible = false;}"
                                 ></PostDetailContainer>
                             </div>
@@ -90,16 +92,33 @@ export default {
         },
         likePost(post) {
             let action;
-            if (store.getters.likeMap.has(post.postId)) {
+            if (store.getters.likeMap.get("likes").has(post.postId)) {
                 post.likeCount --;
-                store.getters.likeMap.delete(post.postId);
-                action = "dislike";
+                store.getters.likeMap.get("likes").delete(post.postId);
+                action = "cancel";
             } else {
                 post.likeCount ++;
-                store.getters.likeMap.set(post.postId, 1);
-                action = "like";
+                store.getters.likeMap.get("likes").set(post.postId, 1);
+                action = "collect";
             }
             axios.post(url + "/api/posts/like-post?postId=" + post.postId + "&action=" + action).then((res) => {
+                if (res.data.code === 0 && !res.data.data) {
+                    this.$message.error("failed");
+                }
+            })
+        },
+        favoritePost(post) {
+            let action;
+            if (store.getters.likeMap.get("favorites").has(post.postId)) {
+                post.favoriteCount --;
+                store.getters.likeMap.get("favorites").delete(post.postId);
+                action = "cancel";
+            } else {
+                post.favoriteCount ++;
+                store.getters.likeMap.get("favorites").set(post.postId, 1);
+                action = "collect";
+            }
+            axios.post(url + "/api/posts/favorite-post?postId=" + post.postId + "&action=" + action).then((res) => {
                 if (res.data.code === 0 && !res.data.data) {
                     this.$message.error("failed");
                 }
@@ -119,7 +138,7 @@ export default {
             })
         },
         async getLikesRecord() {
-            await axios.get(url + "/api/posts/likes-record").then((res) => {
+            await axios.get(url + "/api/posts/record").then((res) => {
                 if (res.data.code === 0) {
                     const data = res.data.data;
                     store.commit("resetLikeMap", data);
@@ -128,10 +147,10 @@ export default {
         }
     },
     async mounted() {
-        this.getPosts();
         if (store.getters.likeMap == null) {
             await this.getLikesRecord();
         }
+        this.getPosts();
     }
 }
 </script>

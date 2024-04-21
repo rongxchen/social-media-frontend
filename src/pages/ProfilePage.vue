@@ -179,7 +179,7 @@ export default {
             })
         },
         async getLikesRecord() {
-            await axios.get(url + "/api/posts/likes-record").then((res) => {
+            await axios.get(url + "/api/posts/record").then((res) => {
                 if (res.data.code === 0) {
                     const data = res.data.data;
                     store.commit("resetLikeMap", data);

@@ -21,9 +21,9 @@
                     <div class="card-like-icon">
                         <el-button @click="likePost" 
                             :style="{
-                                'color': this.postInfo && this.$store.getters.likeMap.has(this.postInfo.postId) ? 'red': '', 
+                                'color': this.postInfo && this.$store.getters.likeMap.get('likes').has(this.postInfo.postId) ? 'red': '', 
                                 'border': 'none',}"
-                            size="small" :icon="this.$store.getters.likeMap.has(postInfo.postId) ? 
+                            size="small" :icon="this.$store.getters.likeMap.get('likes').has(postInfo.postId) ? 
                                 icons.liked : icons.notLiked"
                         ><span class="card-like-likes"> {{ postInfo.likeCount }} </span>
                         </el-button>
