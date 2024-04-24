@@ -154,5 +154,6 @@ export default {
 }
 .card-like-likes {
     font-size: 12px;
+    color: #888888;
 }
 </style>

@@ -82,7 +82,7 @@ export default {
     },
     methods: {
         getPosts() {
-            axios.get(url + "/api/posts?page=" + this.pagination.currPage).then((res) => {
+            axios.get(url + "/api/posts?offset=" + this.posts.length).then((res) => {
                 this.posts = this.posts.concat(res.data.data);
             })
         },
