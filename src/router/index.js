@@ -2,6 +2,7 @@ import {createRouter, createWebHistory} from "vue-router";
 import LoginPage from "../pages/LoginPage.vue";
 import HomePage from "../pages/HomePage.vue";
 import AddPostPage from "../pages/AddPostPage.vue";
+import ChatPage from "../pages/ChatPage.vue";
 import ProfilePage from "../pages/ProfilePage.vue";
 import NotFoundPage from "../pages/error/NotFoundPage.vue";
 
@@ -24,6 +25,12 @@ const routes = [
     name: "add-post",
     component: AddPostPage,
     meta: {title: "add-post"}
+  },
+  {
+    path: "/chat",
+    name: "chat",
+    component: ChatPage,
+    meta: {title: "chat"}
   },
   {
     path: "/profile",

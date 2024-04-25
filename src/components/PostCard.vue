@@ -72,7 +72,8 @@ export default {
             checkLikedStyle: {
                 'color': this.postInfo && store.getters.likeMap.has(this.postInfo.postId) ? 'red': '', 
                 'border': 'none',
-            }
+            },
+            isOperationShown: false,
         }
     },
     methods: {
@@ -84,6 +85,12 @@ export default {
         },
         openPostDetail() {
             this.$emit("openPostDrawer", this.postInfo);
+        },
+        showOperations() {
+            this.isOperationShown = true;
+        },
+        hideOperations() {
+            this.isOperationShown = false;
         },
     },
     mounted() {

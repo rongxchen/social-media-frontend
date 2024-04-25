@@ -103,6 +103,7 @@ export default {
             avatarStyle: !this.isSubcomment ? 
                 {width: '30px', height: '30px'} : 
                 {width: '25px', height: '25px'},
+            isOperationShown: false,
         }
     },
     methods: {
@@ -137,7 +138,13 @@ export default {
         },
         deleteComment(comment) {
             this.$emit("deleteComment", comment);
-        }
+        },
+        showOperations() {
+            this.isOperationShown = true;
+        },
+        hideOperations() {
+            this.isOperationShown = false;
+        },
     },
     mounted() {
         this.userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};

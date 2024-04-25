@@ -81,12 +81,17 @@ export default {
                 {
                     path: "/home",
                     label: "Home",
-                    icon: "ChatLineSquare"
+                    icon: "House"
                 },
                 {
                     path: "/add-post",
                     label: "Add Post",
                     icon: "Plus"
+                },
+                {
+                    path: "/chat",
+                    label: "Chat",
+                    icon: "ChatDotSquare"
                 },
                 {
                     path: "/profile",

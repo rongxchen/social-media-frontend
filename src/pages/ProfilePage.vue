@@ -53,10 +53,10 @@
                         <!-- follows and followers -->
                         <el-descriptions-item label="">
                             <div class="profile-desc-follow">
-                                <el-button style="border: none;" round> 
+                                <el-button @click="openFollows('follows')" style="border: none;" round> 
                                     {{ friend.follows.count + ' Follows' }} 
                                 </el-button>
-                                <el-button style="border: none;" round> 
+                                <el-button @click="openFollowers" style="border: none;" round> 
                                     {{ friend.followers.count + ' Followers' }} 
                                 </el-button>
                                 <el-button style="border: none;" @click="openModifyInfoDialog" round>
@@ -66,6 +66,13 @@
                         </el-descriptions-item>
                     </el-descriptions>
                 </div>
+                <!-- follows / followers dialog -->
+                <el-dialog v-model="friend.visible" width="500px" center>
+                    <FollowsTable
+                        :curr-list="friend[friend.currType].list"
+                        @update-follow-counts="updateFollowCounts"
+                    ></FollowsTable>
+                </el-dialog>
                 <!-- modify info dialog -->
                 <el-dialog v-model="modifyInfoDialog" title="Modify your info" width="500" center>
                     <el-form
@@ -115,6 +122,7 @@
 import store from "@/store";
 import SideMenu from "../components/SideMenu.vue";
 import ProfileTabs from "../components/ProfileTabs.vue";
+import FollowsTable from "../components/FollowsTable.vue";
 import axios from "axios";
 
 const url = store.getters.url;
@@ -124,6 +132,7 @@ export default {
     components: {
         SideMenu,
         ProfileTabs,
+        FollowsTable,
     },
     data() {
         return {
@@ -141,8 +150,11 @@ export default {
                 ]
             },
             friend: {
-                follows: {list: [], count: 0},
-                followers: {list: [], count: 0},
+                currType: "follows",
+                visible: false,
+                follows: {list: [], count: 0, init: false, loading: false, hasMore: true},
+                followers: {list: [], count: 0, init: false, loading: false, hasMore: true},
+                size: 20,
             }
         }
     },
@@ -197,6 +209,37 @@ export default {
                     store.commit("resetFriendMap", data);
                 }
             })
+        },
+        updateFollowCounts() {
+            ["follows", "followers"].forEach(k => {
+                this.friend[k].init = false;
+                this.friend[k].count = this.$store.getters.friendMap.get(k).size;
+            })
+        },
+        openFollows(field) {
+            if (!this.friend[field].init) {
+                axios.get(url + "/api/users/friends/" + field + "?offset=0").then((res) => {
+                    if (res.data.code == 0) {
+                        const list = res.data.data;
+                        this.friend[field].list = [];
+                        if (list.length > 0) {
+                            this.friend[field].list = this.friend[field].list.concat(list);                  
+                            this.friend[field].hasMore = list.length == 20;
+                        }
+                        this.friend[field].init = true;
+                    } else {
+                        this.$message.error(res.data.message);
+                    }
+                    this.friend.currType = field;
+                    this.friend.visible = true;
+                })
+            } else {
+                this.friend.currType = field;
+                this.friend.visible = true;
+            }
+        },
+        openFollowers() {
+            this.openFollows("followers");
         },
     },
     async created() {

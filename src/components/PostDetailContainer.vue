@@ -16,11 +16,11 @@
                     </div>
                 </div>
                 <div v-if="post.authorId != user.appId">
-                    <el-button @click="follow(post.authorId)" v-if="!this.$store.getters.friendMap.get('follows').has(post.authorId)" type="danger" plain round>
+                    <el-button @click="follow(post.authorId)" v-if="!this.$store.getters.friendMap.get('follows').has(post.authorId)" type="danger" plain round size=small>
                         Follow
                         <el-icon><Plus /></el-icon>
                     </el-button>
-                    <el-button @click="unfollow(post.authorId)" v-else type="info" plain round>
+                    <el-button @click="unfollow(post.authorId)" v-else type="info" plain round size="small">
                         Followed
                         <el-icon><Check /></el-icon>
                     </el-button>
@@ -121,9 +121,9 @@
                         :style="{'border': 'none',}" :icon="icons.comment"
                     ><span class="btn-text"> {{ post.commentCount }} </span>
                     </el-button>
-                    </div>
                 </div>
             </div>
+        </div>
         <div v-else>
             <el-empty description="post does not exist"></el-empty>
         </div>
@@ -136,6 +136,7 @@ import { HeartOutlined, HeartFilled, StarOutlined, StarFilled, MessageOutlined, 
 import { ElNotification } from 'element-plus'
 import CommentCard from "./CommentCard.vue";
 import axios from "axios";
+import { follow, unfollow } from "@/utils/methods/follows.js";
 
 const url = store.getters.url;
 
@@ -293,24 +294,11 @@ export default {
                 }
             })
         },
-        collectFriend(action, friendId) {
-            axios.post(url + "/api/users/friends?action=" + action + "&friendId=" + friendId).then((res) => {
-                if (res.data.code == 0 && res.data.data) {
-                    if (action == "follow") {
-                        store.commit("addFollows", friendId);
-                    } else if (action == "unfollow") {
-                        store.commit("removeFollows", friendId);
-                    }
-                } else {
-                    this.$message.error(res.data.message);
-                }
-            })
-        },
         follow(userId) {
-            this.collectFriend("follow", userId);
+            follow(userId);
         },
         unfollow(userId) {
-            this.collectFriend("unfollow", userId);
+            unfollow(userId);
         }
     },
     created() {
