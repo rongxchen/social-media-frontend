@@ -13,8 +13,8 @@
                     <!-- contents -->
                     <div class="posts-waterfall">
                         <div class="posts-container">
-                            <PostCard 
-                                class="post-container"
+                            <PostCard
+                                class="posts-container-card"
                                 v-for="i in Math.ceil(posts.length/2)" :key="i"
                                 :post="posts[(i-1)*2]"
                                 @like-post="likePost(posts[(i-1)*2])"
@@ -24,7 +24,7 @@
                         </div>
                         <div class="posts-container">
                             <PostCard
-                                class="post-container"
+                                class="posts-container-card"
                                 v-for="i in Math.floor(posts.length/2)" :key="i"
                                 :post="posts[i*2-1]"
                                 @like-post="likePost(posts[i*2-1])"
@@ -76,7 +76,7 @@ export default {
             },
             postDetailDrawer: {
                 visible: false,
-                currPost: {}
+                currPost: {},
             }
         }
     },
@@ -144,6 +144,19 @@ export default {
                     store.commit("resetLikeMap", data);
                 }
             })
+        },
+        async getFriendMap() {
+            await axios.get(url + "/api/users/friends").then((res) => {
+                if (res.data.code === 0) {
+                    const data = res.data.data;
+                    store.commit("resetFriendMap", data);
+                }
+            })
+        },
+    },
+    async created() {
+        if (store.getters.friendMap == null) {
+            await this.getFriendMap();
         }
     },
     async mounted() {
@@ -172,8 +185,12 @@ export default {
     margin-top: 30px;
     display: flex;
     justify-content: space-between;
+    width: 100%;
 }
 .post-container {
+    width: 40%;
+}
+.posts-container-card {
     margin-bottom: 20px;
 }
 .post-detail-container {

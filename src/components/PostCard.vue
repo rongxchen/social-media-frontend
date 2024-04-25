@@ -2,7 +2,7 @@
     <el-card class="post-card">
         <!-- post image -->
         <img @click="openPostDetail" class="post-img" :src="postInfo.imageList[0]"/>
-        <div class="post-container">
+        <div class="post-card-container">
             <!-- post title -->
             <div @click="openPostDetail" class="card-title"> {{ postInfo.title }} </div>
             <div class="card-bottom">
@@ -29,15 +29,14 @@
                         </el-button>
                     </div>
                     <!-- operations like delete -->
-                    <div class="post-operations">
+                    <div v-if="postInfo.authorId === userInfo.appId" class="post-operations">
                         <el-dropdown>
                             <span>...</span>
                             <template #dropdown>
                             <el-dropdown-menu>
                                 <!-- delete item -->
-                                <el-dropdown-item
-                                    v-if="postInfo.authorId === userInfo.appId"
-                                ><el-popconfirm 
+                                <el-dropdown-item>
+                                    <el-popconfirm 
                                         width="200"
                                         title="delete the post?"
                                         @confirm="deletePost"
@@ -100,16 +99,16 @@ export default {
 
 <style>
 .post-card {
-    /* margin-bottom: 20px; */
     width: 300px;
     height: auto;
-    & .el-card__body {
-        padding: 0;
-    }
 }
-.post-container {
+.post-card .el-card__body {
+    padding: 0;
+}
+.post-card-container {
     padding: 0px;
     object-fit: contain;
+    margin-bottom: 10px;
 }
 .post-img {
     /* width: 220px; */

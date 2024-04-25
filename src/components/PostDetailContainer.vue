@@ -16,11 +16,13 @@
                     </div>
                 </div>
                 <div v-if="post.authorId != user.appId">
-                    <el-button v-if="true" type="danger" plain round>
+                    <el-button @click="follow(post.authorId)" v-if="!this.$store.getters.friendMap.get('follows').has(post.authorId)" type="danger" plain round>
                         Follow
+                        <el-icon><Plus /></el-icon>
                     </el-button>
-                    <el-button v-else type="info" plain round>
+                    <el-button @click="unfollow(post.authorId)" v-else type="info" plain round>
                         Followed
+                        <el-icon><Check /></el-icon>
                     </el-button>
                 </div>
             </div>
@@ -139,7 +141,7 @@ const url = store.getters.url;
 
 export default {
     name: "HomePage",
-    props: ["currPost"],
+    props: ["currPost", "open"],
     emits: ["closeDrawer", "likePost", "favoritePost"],
     components: {
         CommentCard,
@@ -290,17 +292,43 @@ export default {
                     this.$message.error(res.data.message);
                 }
             })
+        },
+        collectFriend(action, friendId) {
+            axios.post(url + "/api/users/friends?action=" + action + "&friendId=" + friendId).then((res) => {
+                if (res.data.code == 0 && res.data.data) {
+                    if (action == "follow") {
+                        store.commit("addFollows", friendId);
+                    } else if (action == "unfollow") {
+                        store.commit("removeFollows", friendId);
+                    }
+                } else {
+                    this.$message.error(res.data.message);
+                }
+            })
+        },
+        follow(userId) {
+            this.collectFriend("follow", userId);
+        },
+        unfollow(userId) {
+            this.collectFriend("unfollow", userId);
         }
     },
-    mounted() {
-        this.$watch("currPost", (newVal) => {
-            if (newVal) {
-                this.post = newVal;
+    created() {
+        this.$watch("currPost", (val) => {
+            if (val) {
+                this.post = val;
+                this.comments.list = [];
+                Object.keys(this.reply).forEach(k => {
+                    this.reply[k] = "";
+                });
+                this.reply.dialogVisible = false,
+                this.reply.loading= false,
+                this.fetchComments();   
             }
         })
-        if (this.post) {
-            this.fetchComments();
-        }    
+    },
+    mounted() {
+        this.fetchComments();
     }
 }
 </script>

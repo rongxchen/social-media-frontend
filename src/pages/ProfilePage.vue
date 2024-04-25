@@ -54,10 +54,10 @@
                         <el-descriptions-item label="">
                             <div class="profile-desc-follow">
                                 <el-button style="border: none;" round> 
-                                    {{ 0 + ' Follows' }} 
+                                    {{ friend.follows.count + ' Follows' }} 
                                 </el-button>
                                 <el-button style="border: none;" round> 
-                                    {{ 0 + ' Followers' }} 
+                                    {{ friend.followers.count + ' Followers' }} 
                                 </el-button>
                                 <el-button style="border: none;" @click="openModifyInfoDialog" round>
                                     Modify Info
@@ -140,6 +140,10 @@ export default {
                     {max: 200, message: 'Length of description is at most 200 characters', trigger: ['blur', 'change']}
                 ]
             },
+            friend: {
+                follows: {list: [], count: 0},
+                followers: {list: [], count: 0},
+            }
         }
     },
     methods: {
@@ -185,12 +189,23 @@ export default {
                     store.commit("resetLikeMap", data);
                 }
             })
-        }
+        },
+        async getFriendMap() {
+            await axios.get(url + "/api/users/friends").then((res) => {
+                if (res.data.code === 0) {
+                    const data = res.data.data;
+                    store.commit("resetFriendMap", data);
+                }
+            })
+        },
+    },
+    async created() {
+        await this.getFriendMap();
+        this.friend.follows.count = store.getters.friendMap.get("follows").size;
+        this.friend.followers.count = store.getters.friendMap.get("followers").size;
     },
     async mounted() {
-        if (store.getters.likeMap == null) {
-            await this.getLikesRecord();
-        }
+        await this.getLikesRecord();
     }
 }
 </script>

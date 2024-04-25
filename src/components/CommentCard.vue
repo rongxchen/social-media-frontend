@@ -8,13 +8,13 @@
                 <!-- author info and like button -->
                 <div class="comment-author-info">
                     <div :style="greyTextStyle" class="comment-authorname">
-                        <span> {{ commentInfo.authorName }} </span>
+                        <span style="margin-right: 5px;"> {{ commentInfo.authorName }} </span>
                         <span v-if="commentInfo.authorId == userInfo.appId">
                             <el-tag class="comment-author-tag" size="small">author</el-tag>
                         </span>
                         <span v-if="commentInfo.postId != commentInfo.parentId && commentInfo.replyCommentId !== ''">
                             <el-icon><Promotion /></el-icon>
-                            <span style="margin-left: 5px;"> {{ commentInfo.replyCommentUsername }} </span>
+                            <span style="margin-left: 5px; margin-right: 5px;"> {{ commentInfo.replyCommentUsername }} </span>
                             <span v-if="commentInfo.replyCommentUserId == userInfo.appId">
                                 <el-tag class="comment-author-tag" size="small">author</el-tag>
                             </span>
@@ -38,15 +38,14 @@
                 <!-- comment datetime -->
                 <div :style="greyTextStyle" class="comment-datetime">
                     <div> {{ commentInfo.createTime }} </div>
-                    <div>
+                    <div v-if="commentInfo.authorId === userInfo.appId">
                         <el-dropdown>
                             <span>...</span>
                             <template #dropdown>
                             <el-dropdown-menu>
                                 <!-- delete item -->
-                                <el-dropdown-item
-                                    v-if="commentInfo.authorId === userInfo.appId"
-                                ><el-popconfirm 
+                                <el-dropdown-item>
+                                    <el-popconfirm 
                                         width="200"
                                         title="delete the comment?"
                                         @confirm="deleteComment(commentInfo)"
@@ -191,7 +190,6 @@ export default {
 .comment-author-tag {
     height: 16px;
     width: 40px;
-    margin-left: 5px;
     margin-right: 5px;
     font-size: 12px;
 }
