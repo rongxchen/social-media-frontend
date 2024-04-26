@@ -9,9 +9,9 @@
                         <el-icon><ArrowLeft /></el-icon>
                     </el-button>
                     <!-- author avatar -->
-                    <el-avatar class="avatar" :src="post.authorAvatar"></el-avatar>
+                    <el-avatar @click="openUserDetailContainer(currPost.authorId)" class="avatar" :src="post.authorAvatar"></el-avatar>
                     <!-- author name -->
-                    <div class="author-name">
+                    <div @click="openUserDetailContainer(currPost.authorId)" class="author-name">
                         {{ post.authorName }}
                     </div>
                 </div>
@@ -64,6 +64,7 @@
                             :is-subcomment="false"
                             @change-reply="changeReply"
                             @delete-comment="deleteComment"
+                            @open-user-detail-container="openUserDetailContainer"
                         ></CommentCard>
                         <el-divider></el-divider>
                     </div>
@@ -123,6 +124,15 @@
                     </el-button>
                 </div>
             </div>
+            <!-- user detail dialog -->
+            <div style="width: 100%;">
+                <el-drawer v-model="userDetail.visible" size="60%" :with-header="false">
+                    <UserDetailContainer
+                        :user-id="userDetail.userId"
+                        @close-drawer="() => {this.userDetail.visible = false;}"
+                    ></UserDetailContainer>
+                </el-drawer>
+            </div>
         </div>
         <div v-else>
             <el-empty description="post does not exist"></el-empty>
@@ -135,6 +145,7 @@ import store from "@/store";
 import { HeartOutlined, HeartFilled, StarOutlined, StarFilled, MessageOutlined, EditOutlined } from "@ant-design/icons-vue";
 import { ElNotification } from 'element-plus'
 import CommentCard from "./CommentCard.vue";
+import UserDetailContainer from "./UserDetailContainer.vue";
 import axios from "axios";
 import { follow, unfollow } from "@/utils/methods/follows.js";
 
@@ -146,6 +157,7 @@ export default {
     emits: ["closeDrawer", "likePost", "favoritePost"],
     components: {
         CommentCard,
+        UserDetailContainer,
     },
     data() {
         return {
@@ -169,6 +181,10 @@ export default {
                 comment: MessageOutlined,
                 edit: EditOutlined,
             },
+            userDetail: {
+                visible: false,
+                userId: "",
+            }
         }
     },
     methods: {
@@ -299,6 +315,10 @@ export default {
         },
         unfollow(userId) {
             unfollow(userId);
+        },
+        openUserDetailContainer(userId) {
+            this.userDetail.userId = userId;
+            this.userDetail.visible = true;
         }
     },
     created() {
@@ -322,17 +342,9 @@ export default {
 </script>
 
 <style>
-.container {
-    height: 100vh;
-}
-.right-side-page {
-    margin-top: 30px;
-    margin-bottom: 30px;
-    margin-left: 100px;
-    margin-right: 100px;
-}
-.right-side-content {
-    width: 75%;
+.post-detail-container {
+    margin-left: 20px;
+    margin-right: 20px;
 }
 .top-line {
     width: 100%;

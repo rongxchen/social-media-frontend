@@ -3,20 +3,20 @@
         <!-- author avatar and name -->
         <div class="comment-topline">
             <!-- avatar -->
-            <el-avatar :style="avatarStyle" :src="commentInfo.authorAvatar"></el-avatar>
+            <el-avatar @click="openUserDetailContainer(commentInfo.authorId)" :style="avatarStyle" :src="commentInfo.authorAvatar"></el-avatar>
             <div style="width: 100%;">
                 <!-- author info and like button -->
                 <div class="comment-author-info">
                     <div :style="greyTextStyle" class="comment-authorname">
-                        <span style="margin-right: 5px;"> {{ commentInfo.authorName }} </span>
+                        <span @click="openUserDetailContainer(commentInfo.authorId)" style="margin-right: 5px;"> {{ commentInfo.authorName }} </span>
                         <span v-if="commentInfo.authorId == userInfo.appId">
-                            <el-tag class="comment-author-tag" size="small">author</el-tag>
+                            <el-tag class="comment-author-tag" size="small" round>author</el-tag>
                         </span>
                         <span v-if="commentInfo.postId != commentInfo.parentId && commentInfo.replyCommentId !== ''">
                             <el-icon><Promotion /></el-icon>
-                            <span style="margin-left: 5px; margin-right: 5px;"> {{ commentInfo.replyCommentUsername }} </span>
+                            <span @click="openUserDetailContainer(commentInfo.replyCommentUserId)" style="margin-left: 5px; margin-right: 5px;"> {{ commentInfo.replyCommentUsername }} </span>
                             <span v-if="commentInfo.replyCommentUserId == userInfo.appId">
-                                <el-tag class="comment-author-tag" size="small">author</el-tag>
+                                <el-tag class="comment-author-tag" size="small" round>author</el-tag>
                             </span>
                         </span>
                     </div>
@@ -69,6 +69,7 @@
                             :is-subcomment="true"
                             @change-reply="changeReply(subcomment)"
                             @delete-comment="deleteComment(subcomment)"
+                            @open-user-detail-container="openUserDetailContainer"
                         ></CommentCard>
                     </div>
                     <!-- expand more button -->
@@ -93,7 +94,7 @@ const url = store.getters.url;
 
 export default {
     props: ["comment", "isSubcomment"],
-    emits: ["changeReply", "deleteComment"],
+    emits: ["changeReply", "deleteComment", "openUserDetailContainer"],
     data() {
         return {
             userInfo: {},
@@ -101,7 +102,7 @@ export default {
             icons: {liked: HeartFilled, notLiked: HeartOutlined},
             greyTextStyle: {'color': store.getters.greyColor},
             avatarStyle: !this.isSubcomment ? 
-                {width: '30px', height: '30px'} : 
+                {}: // {width: '30px', height: '30px'} : 
                 {width: '25px', height: '25px'},
             isOperationShown: false,
         }
@@ -145,6 +146,9 @@ export default {
         hideOperations() {
             this.isOperationShown = false;
         },
+        openUserDetailContainer(userId) {
+            this.$emit("openUserDetailContainer", userId);
+        }
     },
     mounted() {
         this.userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};

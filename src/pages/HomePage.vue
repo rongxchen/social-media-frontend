@@ -36,14 +36,12 @@
                     <!-- post detail container -->
                     <div style="width: 100%;">
                         <el-drawer v-model="postDetailDrawer.visible" size="60%" :with-header="false">
-                            <div class="post-detail-container">
-                                <PostDetailContainer
-                                    :curr-post="postDetailDrawer.currPost"
-                                    @like-post="likePost(postDetailDrawer.currPost)"
-                                    @favorite-post="favoritePost(postDetailDrawer.currPost)"
-                                    @close-drawer="() => {this.postDetailDrawer.visible = false;}"
-                                ></PostDetailContainer>
-                            </div>
+                            <PostDetailContainer
+                                :curr-post="postDetailDrawer.currPost"
+                                @like-post="likePost(postDetailDrawer.currPost)"
+                                @favorite-post="favoritePost(postDetailDrawer.currPost)"
+                                @close-drawer="() => {this.postDetailDrawer.visible = false;}"
+                            ></PostDetailContainer>
                         </el-drawer>
                     </div>
                 </div>
@@ -58,6 +56,7 @@ import SideMenu from "../components/SideMenu.vue";
 import PostCard from "../components/PostCard.vue";
 import PostDetailContainer from "../components/PostDetailContainer.vue";
 import axios from "axios";
+import { likePost, deletePost, favoritePost } from "@/utils/methods/posts.js";
 
 const url = store.getters.url;
 
@@ -91,34 +90,14 @@ export default {
             this.postDetailDrawer.visible = true;
         },
         likePost(post) {
-            let action;
-            if (store.getters.likeMap.get("likes").has(post.postId)) {
-                post.likeCount --;
-                store.getters.likeMap.get("likes").delete(post.postId);
-                action = "cancel";
-            } else {
-                post.likeCount ++;
-                store.getters.likeMap.get("likes").set(post.postId, 1);
-                action = "collect";
-            }
-            axios.post(url + "/api/posts/like-post?postId=" + post.postId + "&action=" + action).then((res) => {
+            likePost(post).then((res) => {
                 if (res.data.code === 0 && !res.data.data) {
                     this.$message.error("failed");
                 }
-            })
+            });
         },
         favoritePost(post) {
-            let action;
-            if (store.getters.likeMap.get("favorites").has(post.postId)) {
-                post.favoriteCount --;
-                store.getters.likeMap.get("favorites").delete(post.postId);
-                action = "cancel";
-            } else {
-                post.favoriteCount ++;
-                store.getters.likeMap.get("favorites").set(post.postId, 1);
-                action = "collect";
-            }
-            axios.post(url + "/api/posts/favorite-post?postId=" + post.postId + "&action=" + action).then((res) => {
+            favoritePost(post).then((res) => {
                 if (res.data.code === 0 && !res.data.data) {
                     this.$message.error("failed");
                 }
@@ -128,10 +107,9 @@ export default {
             const deleteFromPosts = (postId) => {
                 this.posts = this.posts.filter(x => x.postId != postId);
             }
-            axios.delete(url + "/api/posts?postId=" + postId).then((res) => {
+            deletePost(postId).then((res) => {
                 if (res.data.code == 0) {
                     deleteFromPosts(postId);
-                    this.$message.success(res.data.message);
                 } else {
                     this.$message.error(res.data.message);
                 }
@@ -179,7 +157,7 @@ export default {
     margin-right: 100px;
 }
 .right-side-content {
-    width: 75%;
+    width: 80%;
 }
 .posts-waterfall {
     margin-top: 30px;
@@ -192,9 +170,5 @@ export default {
 }
 .posts-container-card {
     margin-bottom: 20px;
-}
-.post-detail-container {
-    margin-left: 5%;
-    margin-right: 5%;
 }
 </style>

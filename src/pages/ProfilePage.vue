@@ -24,7 +24,7 @@
                                     <!-- username -->
                                     <div class="profile-desc-name"> 
                                         {{ user.username }} 
-                                        <el-tag style="background-color: transparent; border: none;" v-if="user.sex != null && user.sex != '' && user.sex != 'N/A'">
+                                        <el-tag size="small" round :type="user.sex == 'M' ? 'primary' : 'danger'" style="border: none;" v-if="user.sex != null && user.sex != '' && user.sex != 'N/A'">
                                             <div v-if="user.sex == 'M'">
                                                 <el-icon style="background-color: lightblue;"><Male /></el-icon>
                                             </div>
@@ -111,8 +111,10 @@
                         </el-form-item>
                     </el-form>
                 </el-dialog>
-                <!-- profile tabs -->
-                <ProfileTabs class="profile-tags-container"></ProfileTabs>
+                <div class="profile-tabs">
+                    <!-- profile tabs -->
+                    <ProfileTabs class="profile-tabs"></ProfileTabs>
+                </div>
             </div>
         </el-aside>
     </el-container>
@@ -155,7 +157,7 @@ export default {
                 follows: {list: [], count: 0, init: false, loading: false, hasMore: true},
                 followers: {list: [], count: 0, init: false, loading: false, hasMore: true},
                 size: 20,
-            }
+            },
         }
     },
     methods: {
@@ -169,7 +171,7 @@ export default {
         updateInfo() {
             this.$refs.modifyInfoFormRef.validate((valid) => {
                 if (valid) {
-                    if (this.modifyInfoForm.birthday) {
+                    if (this.modifyInfoForm.birthday && typeof this.modifyInfoForm.birthday === 'object') {
                         const date = this.modifyInfoForm.birthday;
                         const year = date.getFullYear();
                         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -243,12 +245,13 @@ export default {
         },
     },
     async created() {
+        await this.getLikesRecord();
         await this.getFriendMap();
         this.friend.follows.count = store.getters.friendMap.get("follows").size;
         this.friend.followers.count = store.getters.friendMap.get("followers").size;
     },
     async mounted() {
-        await this.getLikesRecord();
+        
     }
 }
 </script>
@@ -260,13 +263,13 @@ export default {
 .right-side-page {
     margin-top: 30px;
     margin-bottom: 30px;
-    margin-left: 50px;
+    margin-left: 100px;
     margin-right: 100px;
     display: grid;
     place-items: center;
 }
 .profile-description-container {
-    width: 550px;
+    width: 80%;
 }
 .profile-desc-intro {
     display: flex;
@@ -283,8 +286,10 @@ export default {
     display: flex;
     justify-content: space-evenly;
 }
-.profile-tags-container {
-    width: 550px;
-    margin-top: 30px;
+.profile-tabs {
+    width: 90%;
+    margin-top: 20px;
+    display: grid;
+    place-items: center;
 }
 </style>
