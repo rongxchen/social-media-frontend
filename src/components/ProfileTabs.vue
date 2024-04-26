@@ -88,13 +88,14 @@ export default {
             if (this.tabDataList[tab].init) {
                 return;
             }
+            this.tabDataList[tab].list = [];
             const offset = this.tabDataList[tab].list.length;
             if (tab == "posts") {
                 this.getMyPosts(this.user.appId, offset);
             } else {
                 this.getCollectedPosts(this.user.appId, tab, offset);
             }
-            this.tabDataList[tab].init = true;
+            // this.tabDataList[tab].init = true;
         },
         getCollectedPosts(userId, itemType, offset) {
             axios.get(url + "/api/posts/collected?userId=" + userId + "&itemType=" + itemType + "&offset=" + offset).then((res) =>{

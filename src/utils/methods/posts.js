@@ -14,7 +14,7 @@ export async function likePost(post) {
         store.getters.likeMap.get("likes").set(post.postId, 1);
         action = "collect";
     }
-    axios.post(url + "/api/posts/like-post?postId=" + post.postId + "&action=" + action).then((res) => {
+    axios.post(url + "/api/posts/like-post?postId=" + post.postId + "&ownerId=" + post.authorId + "&action=" + action).then((res) => {
         return res;
     })
 }
@@ -36,7 +36,7 @@ export async function favoritePost(post) {
         store.getters.likeMap.get("favorites").set(post.postId, 1);
         action = "collect";
     }
-    axios.post(url + "/api/posts/favorite-post?postId=" + post.postId + "&action=" + action).then((res) => {
+    axios.post(url + "/api/posts/favorite-post?postId=" + post.postId + "&ownerId=" + post.authorId + "&action=" + action).then((res) => {
         return res;
     })
 }

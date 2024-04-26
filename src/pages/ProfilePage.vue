@@ -38,6 +38,18 @@
                                                 <el-icon style="background-color: lightpink;"><Female /></el-icon>
                                             </div>
                                         </el-tag>
+                                        <!-- remove avatar button -->
+                                        <el-popconfirm
+                                            title="remove avatar?"
+                                            width="100"
+                                            @confirm="removeAvatar"
+                                        >
+                                            <template #reference>
+                                                <el-button style="border: none; margin-left: 10px" round plain type="danger" size="small">
+                                                    <el-icon><Delete /></el-icon>
+                                                </el-button>
+                                            </template>
+                                        </el-popconfirm>
                                     </div>
                                     <!-- appid -->
                                     <div :style="greyTextStyle"> {{ 'appId: ' + user.appId }} </div>
@@ -231,6 +243,15 @@ export default {
                     localStorage.setItem("userInfo", JSON.stringify(user));
                     this.$refs.sideMenuRef.getUserInfo();
                 }
+            })
+        },
+        removeAvatar() {
+            axios.delete(url + "/api/users/avatar").then(() => {
+                const user = JSON.parse(localStorage.getItem("userInfo"));
+                user.avatar = "";
+                this.user = user;
+                localStorage.setItem("userInfo", JSON.stringify(user));
+                this.$refs.sideMenuRef.getUserInfo();
             })
         },
         async getLikesRecord() {
