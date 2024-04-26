@@ -2,7 +2,7 @@
     <el-container class="container">
         <!-- side menu -->
         <el-aside width="15%">
-            <SideMenu></SideMenu>
+            <SideMenu ref="sideMenuRef"></SideMenu>
         </el-aside>
         <!-- right hand side page -->
         <el-aside width="85%">
@@ -19,7 +19,13 @@
                         <el-descriptions-item label="">
                             <div class="profile-desc-intro">
                                 <!-- avatar -->
-                                <el-avatar size="large" :src="user.avatar"></el-avatar>
+                                <el-upload
+                                    action="#"
+                                    :auto-upload="false"
+                                    :show-file-list="false"
+                                    :on-change="uploadAvatar"
+                                ><el-avatar size="large" :src="user.avatar"></el-avatar>
+                                </el-upload>
                                 <div class="profile-desc-personal">
                                     <!-- username -->
                                     <div class="profile-desc-name"> 
@@ -193,6 +199,37 @@ export default {
                     })
                 } else {
                     this.$message.warning("check your inputs");
+                }
+            })
+        },
+        beforeUploadImage(rawFile) {
+            const validFormats = ["image/jpeg", "image/png"];
+            if (!validFormats.includes(rawFile.raw.type)) {
+                this.$message.error('file must be in format of: ' + validFormats);
+                return false;
+            } else if (rawFile.size / 1024 / 1024 > 2) {
+                this.$message.error('image size can not exceed 2MB!')
+                return false;
+            }
+            return true;
+        },
+        uploadAvatar(file) {
+            const pass = this.beforeUploadImage(file);
+            if (!pass) {
+                return;
+            }
+            const formData = new FormData();
+            formData.append('file', file.raw);
+            axios.put(url + "/api/users/avatar", formData, {
+                headers: {'Content-Type': 'multipart/form-data'}
+            }).then((res) => {
+                if (res.data.code == 0) {
+                    const avatar = res.data.data;
+                    const user = JSON.parse(localStorage.getItem("userInfo"));
+                    user.avatar = avatar;
+                    this.user = user;
+                    localStorage.setItem("userInfo", JSON.stringify(user));
+                    this.$refs.sideMenuRef.getUserInfo();
                 }
             })
         },

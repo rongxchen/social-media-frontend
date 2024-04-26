@@ -34,6 +34,9 @@
                             <el-icon style="background-color: lightpink;"><Female /></el-icon>
                         </div>
                     </el-tag>
+                    <el-tag type="info" style="margin-left: 10px; border: none;" size="small" round>
+                        {{ userInfo.age + ' years old' }}
+                    </el-tag>
                 </div>
                 <!-- following info -->
                 <div class="user-desc-item user-desc-following">
