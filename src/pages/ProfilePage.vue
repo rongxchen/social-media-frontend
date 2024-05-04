@@ -30,7 +30,15 @@
                                     <!-- username -->
                                     <div class="profile-desc-name"> 
                                         {{ user.username }} 
-                                        <el-tag size="small" round :type="user.sex == 'M' ? 'primary' : 'danger'" style="border: none;" v-if="user.sex != null && user.sex != '' && user.sex != 'N/A'">
+                                        <!-- <el-tag size="small" round :type="user.sex == 'M' ? 'primary' : 'danger'" style="border: none;" v-if="user.sex != null && user.sex != '' && user.sex != 'N/A'">
+                                            <div v-if="user.sex == 'M'">
+                                                <el-icon style="background-color: lightblue;"><Male /></el-icon>
+                                            </div>
+                                            <div v-else-if="user.sex == 'F'">
+                                                <el-icon style="background-color: lightpink;"><Female /></el-icon>
+                                            </div>
+                                        </el-tag> -->
+                                        <el-tag size="small" round type="info" style="border: none; background-color: transparent;" v-if="user.sex != null && user.sex != '' && user.sex != 'N/A'">
                                             <div v-if="user.sex == 'M'">
                                                 <el-icon style="background-color: lightblue;"><Male /></el-icon>
                                             </div>

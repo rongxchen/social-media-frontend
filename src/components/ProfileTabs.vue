@@ -168,5 +168,6 @@ export default {
 }
 .profile-posts-container-card {
     margin-bottom: 20px;
+    width: 300px;
 }
 </style>

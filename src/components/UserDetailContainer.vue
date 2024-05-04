@@ -26,7 +26,7 @@
                 </div>
                 <!-- sex -->
                 <div class="user-desc-item">
-                    <el-tag size="small" round :type="userInfo.sex == 'M' ? 'primary' : 'danger'" style="border: none;" v-if="userInfo.sex != null && userInfo.sex != '' && userInfo.sex != 'N/A'">
+                    <el-tag size="small" round type="info" style="border: none; background-color: transparent; margin-right: 5px;" v-if="userInfo.sex != null && userInfo.sex != '' && userInfo.sex != 'N/A'">
                         <div v-if="userInfo.sex == 'M'">
                             <el-icon style="background-color: lightblue;"><Male /></el-icon>
                         </div>
@@ -34,7 +34,7 @@
                             <el-icon style="background-color: lightpink;"><Female /></el-icon>
                         </div>
                     </el-tag>
-                    <el-tag type="info" style="margin-left: 10px; border: none;" size="small" round>
+                    <el-tag :type="userInfo.sex == 'M'? 'primary' : (userInfo.sex == 'F' ? 'danger' : 'info')" style="border: none;" size="small" round>
                         {{ userInfo.age + ' years old' }}
                     </el-tag>
                 </div>
@@ -120,7 +120,7 @@ export default {
     },
     created() {
         this.$watch("userId", (newVal) => {
-            if (newVal && this.currUserId != newVal) {
+            if (newVal  && newVal != null) {
                 this.currUserId = newVal;
                 this.getUserInfo();
                 this.getFriendsCount();
@@ -128,7 +128,7 @@ export default {
         })
     },
     mounted() {
-        if (this.currUserId && this.currUserId != "") {
+        if (this.currUserId && this.currUserId != null) {
             this.getUserInfo();
             this.getFriendsCount();
         }

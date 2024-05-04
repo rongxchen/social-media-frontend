@@ -106,7 +106,7 @@ export default {
 
 <style>
 .post-card {
-    width: 300px;
+    width: auto;
     height: auto;
 }
 .post-card .el-card__body {

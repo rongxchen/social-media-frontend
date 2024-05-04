@@ -126,10 +126,10 @@
             </div>
             <!-- user detail dialog -->
             <div style="width: 100%;">
-                <el-drawer v-model="userDetail.visible" size="60%" :with-header="false">
+                <el-drawer v-model="userDetail.visible" size="60%" :with-header="false" :before-close="closeUserDetailContainer">
                     <UserDetailContainer
                         :user-id="userDetail.userId"
-                        @close-drawer="() => {this.userDetail.visible = false;}"
+                        @close-drawer="closeUserDetailContainer()"
                     ></UserDetailContainer>
                 </el-drawer>
             </div>
@@ -319,7 +319,11 @@ export default {
         openUserDetailContainer(userId) {
             this.userDetail.userId = userId;
             this.userDetail.visible = true;
-        }
+        },
+        closeUserDetailContainer() {
+            this.userDetail.visible = false; 
+            this.userDetail.userId = null;
+        },
     },
     created() {
         this.$watch("currPost", (val) => {
