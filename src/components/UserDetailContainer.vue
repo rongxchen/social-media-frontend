@@ -120,7 +120,7 @@ export default {
     },
     created() {
         this.$watch("userId", (newVal) => {
-            if (newVal  && newVal != null) {
+            if (newVal) {
                 this.currUserId = newVal;
                 this.getUserInfo();
                 this.getFriendsCount();
@@ -128,7 +128,7 @@ export default {
         })
     },
     mounted() {
-        if (this.currUserId && this.currUserId != null) {
+        if (this.currUserId) {
             this.getUserInfo();
             this.getFriendsCount();
         }

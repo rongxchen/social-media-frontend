@@ -9,7 +9,9 @@
                         <el-icon><ArrowLeft /></el-icon>
                     </el-button>
                     <!-- author avatar -->
-                    <el-avatar @click="openUserDetailContainer(currPost.authorId)" class="avatar" :src="post.authorAvatar"></el-avatar>
+                    <div @click="openUserDetailContainer(currPost.authorId)">
+                        <el-avatar size :src="post.authorAvatar"></el-avatar>
+                    </div>
                     <!-- author name -->
                     <div @click="openUserDetailContainer(currPost.authorId)" class="author-name">
                         {{ post.authorName }}

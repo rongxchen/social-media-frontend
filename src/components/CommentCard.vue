@@ -12,8 +12,9 @@
                         <span v-if="commentInfo.authorId == userInfo.appId">
                             <el-tag class="comment-author-tag" size="small" round>author</el-tag>
                         </span>
-                        <span v-if="commentInfo.postId != commentInfo.parentId && commentInfo.replyCommentId !== ''">
-                            <el-icon><Promotion /></el-icon>
+                        <span style="display: flex; align-items: center;" v-if="commentInfo.postId != commentInfo.parentId && commentInfo.replyCommentId !== ''">
+                            <el-icon><CaretRight /></el-icon>
+                            <!-- <el-icon><Promotion /></el-icon> -->
                             <span @click="openUserDetailContainer(commentInfo.replyCommentUserId)" style="margin-left: 5px; margin-right: 5px;"> {{ commentInfo.replyCommentUsername }} </span>
                             <span v-if="commentInfo.replyCommentUserId == userInfo.appId">
                                 <el-tag class="comment-author-tag" size="small" round>author</el-tag>
@@ -74,9 +75,10 @@
                     </div>
                     <!-- expand more button -->
                     <a-spin :spinning="commentInfo.loading" v-if="commentInfo.replies && commentInfo.commentCount > commentInfo.replies.length">
-                        <el-button @click="expandSubComments(commentInfo)" style="border: none;" size="small" class="comment-expand-btn">
-                            expand more
-                            <el-icon><ArrowDown /></el-icon>
+                        <el-button @click="expandSubComments(commentInfo)" style="border: none; color: #888888;" size="small" class="comment-expand-btn">
+                            <el-icon><SemiSelect /></el-icon>
+                            <span class="comment-expand-icon">expand more</span>
+                            <el-icon class="comment-expand-icon"><ArrowDown /></el-icon>
                         </el-button>
                     </a-spin>
                 </div>
@@ -173,6 +175,7 @@ export default {
 .comment-authorname {
     margin-left: 10px;
     font-size: 16px;
+    display: flex;
 }
 .comment-content {
     margin-top: -5px;
@@ -189,7 +192,7 @@ export default {
     justify-content: space-between;
 }
 .comment-expand-btn {
-    font-size: 10px; 
+    font-size: 10px;
 }
 .comment-subcomments {
     margin-left: 10px;
@@ -203,5 +206,8 @@ export default {
     width: 40px;
     margin-right: 5px;
     font-size: 12px;
+}
+.comment-expand-icon {
+    margin-left: 5px;
 }
 </style>
