@@ -42,7 +42,7 @@
                         <el-form-item>
                             <div class="sign-up-link">
                                 <span>Do not have an account yet? </span>
-                                <el-link @click="changeForm('register')" style="margin-left: 5px;">Sign up here</el-link>
+                                <a href="#" @click="changeForm('register')" style="margin-left: 5px;">Sign up here</a>
                             </div>
                         </el-form-item>
                     </el-form>

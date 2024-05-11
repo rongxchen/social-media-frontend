@@ -57,7 +57,7 @@
                             :curr-post="postDetailDrawer.currPost"
                             @like-post="likePost(postDetailDrawer.currPost)"
                             @favorite-post="favoritePost(postDetailDrawer.currPost)"
-                            @close-drawer="() => {this.postDetailDrawer.visible = false;}"
+                            @close-drawer="closePostDetailContainer()"
                         ></PostDetailContainer>
                     </el-drawer>
                 </div>
@@ -89,6 +89,7 @@ export default {
             postIndexArray: [],
             pagination: {
                 currPage: 1,
+                loading: false,
             },
             postDetailDrawer: {
                 visible: false,
@@ -101,6 +102,7 @@ export default {
     },
     methods: {
         getPosts() {
+            this.pagination.loading = true;
             axios.get(url + "/api/posts?offset=" + this.posts.length).then((res) => {
                 const data = res.data.data;
                 const arr = [];
@@ -109,6 +111,7 @@ export default {
                 }
                 this.postIndexArray = this.postIndexArray.concat(arr);
                 this.posts = this.posts.concat(data);
+                this.pagination.loading = false;
             })
         },
         openCurrPostDetail(post) {
@@ -156,6 +159,10 @@ export default {
                     store.commit("resetFriendMap", data);
                 }
             })
+        },
+        closePostDetailContainer() {
+            this.postDetailDrawer.visible = false; 
+            this.postDetailDrawer.currPost = null;
         },
     },
     async created() {

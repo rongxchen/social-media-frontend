@@ -94,10 +94,12 @@
                 </div>
                 <!-- follows / followers dialog -->
                 <el-dialog v-model="friend.visible" width="500px" center>
-                    <FollowsTable
-                        :curr-list="friend[friend.currType].list"
-                        @update-follow-counts="updateFollowCounts"
-                    ></FollowsTable>
+                    <a-spin :spinning="friend.loading">
+                        <FollowsTable
+                            :curr-list="friend[friend.currType].list"
+                            @update-follow-counts="updateFollowCounts"
+                        ></FollowsTable>
+                    </a-spin>
                 </el-dialog>
                 <!-- modify info dialog -->
                 <el-dialog v-model="modifyInfoDialog" title="Modify your info" width="500" center>
@@ -183,15 +185,15 @@ export default {
                 follows: {list: [], count: 0, init: false, loading: false, hasMore: true},
                 followers: {list: [], count: 0, init: false, loading: false, hasMore: true},
                 size: 20,
+                loading: false,
             },
         }
     },
     methods: {
         openModifyInfoDialog() {
-            this.modifyInfoForm.username = this.user.username;
-            this.modifyInfoForm.description = this.user.description;
-            this.modifyInfoForm.birthday = this.user.birthday;
-            this.modifyInfoForm.sex = this.user.sex;
+            Object.keys(this.user).forEach(key => {
+                this.modifyInfoForm[key] = this.user[key];
+            })
             this.modifyInfoDialog = true;
         },
         updateInfo() {
@@ -285,6 +287,8 @@ export default {
             })
         },
         openFollows(field) {
+            this.friend.visible = true;
+            this.friend.loading = true;
             if (!this.friend[field].init) {
                 axios.get(url + "/api/users/friends/" + field + "?offset=0").then((res) => {
                     if (res.data.code == 0) {
@@ -299,11 +303,11 @@ export default {
                         this.$message.error(res.data.message);
                     }
                     this.friend.currType = field;
-                    this.friend.visible = true;
+                    this.friend.loading = false;
                 })
             } else {
                 this.friend.currType = field;
-                this.friend.visible = true;
+                this.friend.loading = false;
             }
         },
         openFollowers() {

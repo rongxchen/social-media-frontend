@@ -155,7 +155,7 @@ const url = store.getters.url;
 
 export default {
     name: "HomePage",
-    props: ["currPost", "open"],
+    props: ["currPost"],
     emits: ["closeDrawer", "likePost", "favoritePost"],
     components: {
         CommentCard,
@@ -342,7 +342,9 @@ export default {
         })
     },
     mounted() {
-        this.fetchComments();
+        if (this.post) {
+            this.fetchComments();
+        }
     }
 }
 </script>
