@@ -357,7 +357,7 @@ export default {
     justify-content: space-evenly;
 }
 .profile-tabs {
-    width: 90%;
+    width: 80%;
     margin-top: 20px;
     display: grid;
     place-items: center;

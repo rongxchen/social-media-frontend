@@ -9,11 +9,11 @@
                         <el-icon><ArrowLeft /></el-icon>
                     </el-button>
                     <!-- author avatar -->
-                    <div @click="openUserDetailContainer(currPost.authorId)">
+                    <div @click="closeDrawer">
                         <el-avatar size :src="post.authorAvatar"></el-avatar>
                     </div>
                     <!-- author name -->
-                    <div @click="openUserDetailContainer(currPost.authorId)" class="author-name">
+                    <div @click="closeDrawer" class="author-name">
                         {{ post.authorName }}
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                             :is-subcomment="false"
                             @change-reply="changeReply"
                             @delete-comment="deleteComment"
-                            @open-user-detail-container="openUserDetailContainer"
+                            @open-user-detail-container="closeDrawer"
                         ></CommentCard>
                         <el-divider></el-divider>
                     </div>
@@ -126,15 +126,6 @@
                     </el-button>
                 </div>
             </div>
-            <!-- user detail dialog -->
-            <div style="width: 100%;">
-                <el-drawer v-model="userDetail.visible" size="60%" :with-header="false" :before-close="closeUserDetailContainer">
-                    <UserDetailContainer
-                        :user-id="userDetail.userId"
-                        @close-drawer="closeUserDetailContainer()"
-                    ></UserDetailContainer>
-                </el-drawer>
-            </div>
         </div>
         <div v-else>
             <el-empty description="post does not exist"></el-empty>
@@ -147,7 +138,6 @@ import store from "@/store";
 import { HeartOutlined, HeartFilled, StarOutlined, StarFilled, MessageOutlined, EditOutlined } from "@ant-design/icons-vue";
 import { ElNotification } from 'element-plus'
 import CommentCard from "./CommentCard.vue";
-import UserDetailContainer from "./UserDetailContainer.vue";
 import axios from "axios";
 import { follow, unfollow } from "@/utils/methods/follows.js";
 
@@ -159,7 +149,6 @@ export default {
     emits: ["closeDrawer", "likePost", "favoritePost"],
     components: {
         CommentCard,
-        UserDetailContainer,
     },
     data() {
         return {
@@ -348,7 +337,7 @@ export default {
 }
 </script>
 
-<style>
+<style scope>
 .post-detail-container {
     margin-left: 20px;
     margin-right: 20px;

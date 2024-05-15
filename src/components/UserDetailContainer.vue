@@ -57,6 +57,54 @@
                         </el-button>
                     </div>
                 </div>
+                <!-- tab selection -->
+                <div class="user-tab">
+                    <el-tabs
+                        v-model="currTab"
+                        @tab-click="handleTabClick"
+                    >
+                        <el-tab-pane v-for="tab in tabs" :key="tab.value" 
+                            :label="tab.label" :name="tab.value"
+                        ></el-tab-pane>
+                    </el-tabs>
+                </div>
+                <!-- user posts and favorites -->
+                <div v-if="tabDataList[currTab].list.length > 0" class="user-posts-waterfall">
+                    <div class="user-posts-container">
+                        <PostCard
+                            class="user-posts-container-card"
+                            v-for="i in Math.ceil(tabDataList[currTab].list.length/2)" :key="i"
+                            :post="tabDataList[currTab].list[(i-1)*2]"
+                            @like-post="likePost(tabDataList[currTab].list[(i-1)*2])"
+                            @delete-post="deletePost(tabDataList[currTab].list[(i-1)*2])"
+                            @open-post-drawer="openCurrPostDetail(tabDataList[currTab].list[(i-1)*2])"
+                        ></PostCard>
+                    </div>
+                    <div class="user-posts-container">
+                        <PostCard
+                            class="user-posts-container-card"
+                            v-for="i in Math.floor(tabDataList[currTab].list.length/2)" :key="i"
+                            :post="tabDataList[currTab].list[i*2-1]"
+                            @like-post="likePost(tabDataList[currTab].list[i*2-1])"
+                            @delete-post="deletePost(tabDataList[currTab].list[i*2-1])"
+                            @open-post-drawer="openCurrPostDetail(tabDataList[currTab].list[i*2-1])"
+                        ></PostCard>
+                    </div>
+                </div>
+                <div v-else>
+                    <el-empty description="nothing here..."></el-empty>
+                </div>
+                <!-- post detail drawer -->
+                <div style="width: 100%;">
+                    <el-drawer v-model="postDetailDrawer.visible" size="80%" :with-header="false">
+                        <PostDetailContainerForUser
+                            :curr-post="postDetailDrawer.currPost"
+                            @like-post="likePost(postDetailDrawer.currPost)"
+                            @favorite-post="favoritePost(postDetailDrawer.currPost)"
+                            @close-drawer="() => {this.postDetailDrawer.visible = false;}"
+                        ></PostDetailContainerForUser>
+                    </el-drawer>
+                </div>
             </div>
         </div>
         <div v-else>
@@ -68,19 +116,39 @@
 <script>
 import store from "@/store";
 import axios from "axios";
+import PostCard from "./PostCard.vue";
+import PostDetailContainerForUser from "./PostDetailContainerForUser.vue";
 import { follow, unfollow } from "@/utils/methods/follows.js";
+import { likePost, deletePost, favoritePost } from "@/utils/methods/posts.js";
 
 const url = store.getters.url;
 
 export default {
     props: ["userId"],
     emits: ["closeDrawer"],
+    components: {
+        PostCard,
+        PostDetailContainerForUser,
+    },
     data() {
         return {
             greyTextStyle: {color: store.getters.greyColor},
             currUserId: this.userId,
             userInfo: {},
             user: JSON.parse(localStorage.getItem("userInfo")) || {},
+            currTab: "posts",
+            tabs: [
+                {"label": "Posts", "value": "posts"},
+                {"label": "Favorites", "value": "favorites"},
+            ],
+            tabDataList: {
+                posts: {list: [], init: false,}, 
+                favorites: {list: [], init: false},
+            },
+            postDetailDrawer: {
+                visible: false,
+                currPost: {},
+            },
         }
     },
     methods: {
@@ -110,6 +178,7 @@ export default {
         },
         closeDrawer() {
             this.$emit("closeDrawer");
+            this.postDetailDrawer.visible = false;
         },
         follow(userId) {
             follow(userId);
@@ -117,6 +186,71 @@ export default {
         unfollow(userId) {
             unfollow(userId);
         },
+        clearTabDataList() {
+            ["posts", "favorites"].forEach(k => {
+                this.tabDataList[k].list = [];
+                this.tabDataList[k].init = false;
+            })
+        },
+        handleTabClick(val) {
+            const tab = val.props.name;
+            if (this.tabDataList[tab].init) {
+                return;
+            }
+            this.tabDataList[tab].list = [];
+            const offset = this.tabDataList[tab].list.length;
+            if (tab == "posts") {
+                this.getUserPosts(this.userId, offset);
+            } else {
+                this.getUserFavorites(this.userId, offset);
+            }
+            this.tabDataList[tab].init = true;
+        },
+        likePost(post) {
+            likePost(post).then((res) => {
+                if (res.data.code === 0 && !res.data.data) {
+                    this.$message.error("failed");
+                }
+            });
+        },
+        deletePost(postId) {
+            deletePost(postId);
+        },
+        favoritePost(post) {
+            favoritePost(post).then((res) => {
+                if (res.data.code === 0 && !res.data.data) {
+                    this.$message.error("failed");
+                }
+            })
+        },
+        openCurrPostDetail(post) {
+            this.postDetailDrawer.currPost = post;
+            this.postDetailDrawer.visible = true;
+        },
+        getUserPosts(userId, offset) {
+            axios.get(url + "/api/posts?offset=" + offset + "&userId=" + userId)
+                .then((res) => {
+                    if (res.data.code == 0) {
+                        const data = res.data.data;
+                        this.tabDataList["posts"].list = data.concat(this.tabDataList["posts"].list);
+                        this.tabDataList["posts"].init = true;
+                    } else {
+                        this.$message.error(res.data.message);
+                    }
+                })
+        },
+        getUserFavorites(userId, offset) {
+            axios.get(url + "/api/posts/collected?offset=" + offset + "&itemType=favorites&userId=" + userId)
+                .then((res) => {
+                    if (res.data.code == 0) {
+                        const data = res.data.data;
+                        this.tabDataList["favorites"].list = data.concat(this.tabDataList["favorites"].list);
+                        this.tabDataList["favorites"].init = true;
+                    } else {
+                        this.$message.error(res.data.message);
+                    }
+                })
+        }
     },
     created() {
         this.$watch("userId", (newVal) => {
@@ -124,6 +258,9 @@ export default {
                 this.currUserId = newVal;
                 this.getUserInfo();
                 this.getFriendsCount();
+                this.clearTabDataList();
+                this.postDetailDrawer.visible = false;
+                this.getUserPosts(this.currUserId, 0);
             }
         })
     },
@@ -131,12 +268,13 @@ export default {
         if (this.currUserId) {
             this.getUserInfo();
             this.getFriendsCount();
+            this.getUserPosts(this.currUserId, 0);
         }
     }
 }
 </script>
 
-<style>
+<style scoped>
 .user-detail-container {
     margin-left: 20px;
     margin-right: 20px;
@@ -159,5 +297,22 @@ export default {
 .user-desc-following-item {
     margin-right: 20px;
     text-align: center;
+}
+.user-posts-waterfall {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+.user-post-container {
+    width: 40%;
+}
+.user-posts-container-card {
+    margin-bottom: 20px;
+    width: 300px;
+}
+.user-tab {
+    display: flex; 
+    justify-content: center;
 }
 </style>

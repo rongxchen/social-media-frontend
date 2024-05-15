@@ -12,9 +12,10 @@
                         <span v-if="commentInfo.authorId == userInfo.appId">
                             <el-tag class="comment-author-tag" size="small" round>author</el-tag>
                         </span>
-                        <span style="display: flex; align-items: center;" v-if="commentInfo.postId != commentInfo.parentId && commentInfo.replyCommentId !== ''">
-                            <el-icon><CaretRight /></el-icon>
-                            <!-- <el-icon><Promotion /></el-icon> -->
+                        <span v-if="commentInfo.postId != commentInfo.parentId && commentInfo.replyCommentId !== ''">
+                            <el-icon style="margin-top: 2px;"><CaretRight /></el-icon>
+                        </span>
+                        <span v-if="commentInfo.postId != commentInfo.parentId && commentInfo.replyCommentId !== ''">
                             <span @click="openUserDetailContainer(commentInfo.replyCommentUserId)" style="margin-left: 5px; margin-right: 5px;"> {{ commentInfo.replyCommentUsername }} </span>
                             <span v-if="commentInfo.replyCommentUserId == userInfo.appId">
                                 <el-tag class="comment-author-tag" size="small" round>author</el-tag>
@@ -202,8 +203,6 @@ export default {
     margin-bottom: 10px;
 }
 .comment-author-tag {
-    height: 16px;
-    width: 40px;
     margin-right: 5px;
     font-size: 12px;
 }

@@ -95,7 +95,7 @@ export default {
             } else {
                 this.getCollectedPosts(this.user.appId, tab, offset);
             }
-            // this.tabDataList[tab].init = true;
+            this.tabDataList[tab].init = true;
         },
         getCollectedPosts(userId, itemType, offset) {
             axios.get(url + "/api/posts/collected?userId=" + userId + "&itemType=" + itemType + "&offset=" + offset).then((res) =>{
@@ -145,7 +145,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .tab-container {
     width: 100%;
     display: grid;
