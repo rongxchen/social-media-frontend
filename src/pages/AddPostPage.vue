@@ -173,7 +173,17 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.container {
+    height: 100vh;
+}
+.right-side-page {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    margin-right: 30px;
+    display: grid;
+    place-items: center;
+}
 .image-upload-container {
     margin-bottom: 5%;
 }

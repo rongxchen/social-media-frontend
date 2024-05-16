@@ -3,8 +3,7 @@ import { useDark } from '@vueuse/core';
 
 export default createStore({
   state: {
-    // url: "http://localhost:8080",
-    url: "https://social-media-backend.azurewebsites.net",
+    url: "http://192.168.0.196:8080",
     theme: useDark(),
     greyColor: "#888888",
     likeMap: null,

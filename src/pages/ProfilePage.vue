@@ -139,10 +139,8 @@
                         </el-form-item>
                     </el-form>
                 </el-dialog>
-                <div class="profile-tabs">
-                    <!-- profile tabs -->
-                    <ProfileTabs class="profile-tabs"></ProfileTabs>
-                </div>
+                <!-- profile tabs -->
+                <ProfileTabs class="profile-tabs"></ProfileTabs>
             </div>
         </el-aside>
     </el-container>
@@ -326,7 +324,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .container {
     height: 100vh;
 }

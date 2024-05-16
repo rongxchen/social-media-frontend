@@ -6,7 +6,7 @@
         </el-aside>
         <!-- right hand side page -->
         <el-aside width="85%">
-            <div class="right-side-page">
+            <div class="home-page">
                 <!-- search box -->
                 <div class="search-box">
                     <el-input
@@ -179,18 +179,18 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .container {
     height: 100vh;
 }
-.right-side-page {
+.home-page {
     margin-top: 30px;
     margin-bottom: 30px;
-    margin-left: 100px;
-    margin-right: 100px;
+    margin-left: 50px;
+    margin-right: 50px;
 }
 .search-box {
-    width: 60%;
+    width: 40%;
     display: flex;
 }
 .posts-waterfall {
@@ -199,11 +199,11 @@ export default {
     justify-content: space-between;
     width: 100%;
 }
-.post-container {
-    width: 100%;
+.posts-container {
+    width: 280px;
 }
 .posts-container-card {
-    width: 250px;
+    width: 100%;
     margin-bottom: 20px;
 }
 </style>

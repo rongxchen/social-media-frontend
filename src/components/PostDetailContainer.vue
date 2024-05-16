@@ -5,7 +5,7 @@
             <div class="top-line">
                 <div class="top-line-left">
                     <!-- back arrow -->
-                    <el-button style="border: none" @click="closeDrawer">
+                    <el-button style="border: none; margin-right: 10px" @click="closeDrawer">
                         <el-icon><ArrowLeft /></el-icon>
                     </el-button>
                     <!-- author avatar -->
