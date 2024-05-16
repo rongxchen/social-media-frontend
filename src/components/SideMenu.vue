@@ -54,7 +54,7 @@
                 :inactive-action-icon="icons.sunIcon"
                 inline-prompt
                 @change="switchThemes()"
-                style="margin-bottom: 30px;"
+                style="margin-bottom: 10px;"
             />
             <el-button @click="logout" type="danger">Log out</el-button>
         </div>
@@ -144,7 +144,5 @@ export default {
 .logout-button {
     display: grid;
     place-items: center;
-    margin-top: 10px;
-    margin-bottom: 30px;
 }
 </style>
