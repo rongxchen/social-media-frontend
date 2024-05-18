@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@element-plus/icons": "^0.0.11",
+    "@vitejs/plugin-vue": "^5.0.4",
     "ant-design-vue": "^4.1.2",
     "axios": "^1.6.8",
     "core-js": "^3.8.3",

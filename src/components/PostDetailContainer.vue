@@ -131,6 +131,7 @@
                 <el-drawer v-model="userDetail.visible" size="60%" :with-header="false" :before-close="closeUserDetailContainer">
                     <UserDetailContainer
                         :user-id="userDetail.userId"
+                        :curr-post="post"
                         @close-drawer="closeUserDetailContainer()"
                     ></UserDetailContainer>
                 </el-drawer>

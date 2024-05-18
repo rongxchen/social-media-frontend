@@ -4,7 +4,7 @@
   </body>
 </template>
 
-<script setup>
+<script>
 </script>
 
 <style>

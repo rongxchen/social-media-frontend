@@ -124,7 +124,7 @@ import { likePost, deletePost, favoritePost } from "@/utils/methods/posts.js";
 const url = store.getters.url;
 
 export default {
-    props: ["userId"],
+    props: ["userId", "currPost"],
     emits: ["closeDrawer"],
     components: {
         PostCard,
@@ -234,6 +234,12 @@ export default {
                         const data = res.data.data;
                         this.tabDataList["posts"].list = data.concat(this.tabDataList["posts"].list);
                         this.tabDataList["posts"].init = true;
+                        for (let i = 0; i < this.tabDataList["posts"].list.length; i++) {
+                            if (this.tabDataList["posts"].list[i].postId == this.currPost.postId) {
+                                this.tabDataList["posts"].list[i] = this.currPost;
+                                break;
+                            }
+                        }
                     } else {
                         this.$message.error(res.data.message);
                     }
@@ -246,6 +252,12 @@ export default {
                         const data = res.data.data;
                         this.tabDataList["favorites"].list = data.concat(this.tabDataList["favorites"].list);
                         this.tabDataList["favorites"].init = true;
+                        for (let i = 0; i < this.tabDataList["posts"].list.length; i++) {
+                            if (this.tabDataList["posts"].list[i].postId == this.currPost.postId) {
+                                this.tabDataList["posts"].list[i] = this.currPost;
+                                break;
+                            }
+                        }
                     } else {
                         this.$message.error(res.data.message);
                     }

@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import LoginPage from "../pages/LoginPage.vue";
 import HomePage from "../pages/HomePage.vue";
 import AddPostPage from "../pages/AddPostPage.vue";
@@ -30,7 +30,7 @@ const routes = [
     path: "/chat",
     name: "chat",
     component: ChatPage,
-    meta: {title: "chat"}
+    meta: {title: "chat"},
   },
   {
     path: "/profile",
@@ -48,7 +48,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes,
+  routes: routes,
 });
 
 const allowUrlList = ["/login", "/404", "/reset-password"];
@@ -62,8 +62,10 @@ router.beforeEach((to, from, next) => {
     let backPath = token? "/profile": "/login";
     return next("/404?backPath=" + backPath);
   }
-  if (allowUrlList.includes(to.path) || token) return next();
+  if (allowUrlList.includes(to.path) || token) {
+    return next();
+  }
   return next("/login");
 });
 
-export default router
+export default router;

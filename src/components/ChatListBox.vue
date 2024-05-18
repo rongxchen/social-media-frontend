@@ -1,5 +1,5 @@
 <template>
-    <div class="chat-box">
+    <div :style="selectedStyle" class="chat-box">
         <div class="chat-avatar">
             <el-avatar :src="chatBoxInfo.avatar" :size="40"></el-avatar>
         </div>
@@ -9,13 +9,17 @@
                     <span class="chat-displayname" :style="textOverflowEllipsisStyle">{{ chatBoxInfo.username }}</span>
                 </div>
                 <div>
-                    <span class="chat-last-msg" :sytle="textOverflowEllipsisStyle">{{ chatBoxInfo.messages[chatBoxInfo.messages.length-1] }}</span>
+                    <span class="chat-last-msg" :sytle="textOverflowEllipsisStyle">{{ chatBoxInfo.messages[chatBoxInfo.messages.length-1].content }}</span>
                 </div>
             </div>
             <div>
-                <div class="chat-date">2023-01-01</div>
+                <div class="chat-date">
+                    {{ chatBoxInfo.messages[chatBoxInfo.messages.length-1].timestamp }}
+                </div>
                 <div class="chat-unread">
-                    <el-tag round type="danger" style="border: none" size="small">1</el-tag>
+                    <el-tag round type="danger" style="border: none" size="small">
+                        {{ chatBoxInfo.unreadCount }}
+                    </el-tag>
                 </div>
             </div>
         </div>
@@ -25,6 +29,7 @@
 <script>
 export default {
     props: ["chatBoxInfo"],
+    emits: ["go-chat"],
     data() {
         return {
             textOverflowEllipsisStyle: {
@@ -33,13 +38,31 @@ export default {
                 "-webkit-box-orient": "vertical",
                 "overflow": "hidden",
                 "text-overflow": "ellipsis",
-            }
+            },
+            lightGreyStyle: {
+                "opacity": "0.8",
+                "color": "#409EFF",
+                "font-weight": "900",
+            },
+            selectedStyle: {},
         }
     },
     methods: {
         goChat() {
-            this.$router.push("/chat?appId=" + this.chatBoxInfo.username);
+            this.$emit("go-chat");
         }
+    },
+    mounted() {
+        this.selectedStyle = this.$route.query.appId && this.$route.query.appId == this.chatBoxInfo.appId ? this.lightGreyStyle : {};
+        this.$watch("$route.query.appId", (newVal) => {
+            if (newVal) {
+                if (newVal == this.chatBoxInfo.appId) {
+                    this.selectedStyle = this.lightGreyStyle;
+                } else {
+                    this.selectedStyle = {};
+                }
+            }
+        })
     }
 }
 </script>
@@ -47,8 +70,10 @@ export default {
 <style scope>
 .chat-box {
     margin-right: 5px;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     display: flex;
+    border-radius: 8px;
+    padding: 4px;
 }
 .chat-avatar {
     width: 20%;

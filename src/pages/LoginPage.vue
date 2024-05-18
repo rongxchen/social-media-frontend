@@ -193,7 +193,6 @@ export default {
         login() {
             this.$refs.loginFormRef.validate(async (valid) => {
                 if (valid) {
-                    console.log(this.rememberMe);
                     if (this.rememberMe) {
                         this.setCookie(this.loginForm.email, this.loginForm.password, 7);
                     }
