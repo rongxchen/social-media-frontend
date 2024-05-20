@@ -1,11 +1,11 @@
 <template>
     <el-container class="container">
         <!-- side menu -->
-        <el-aside width="15%">
+        <el-aside width="12%">
             <SideMenu></SideMenu>
         </el-aside>
         <!-- right hand side page -->
-        <el-aside width="85%">
+        <el-aside width="88%">
             <div class="right-side-page">
                 <!-- image upload -->
                 <div class="image-upload-container">
@@ -179,7 +179,7 @@ export default {
 }
 .right-side-page {
     margin-top: 30px;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
     margin-right: 30px;
     display: grid;
     place-items: center;

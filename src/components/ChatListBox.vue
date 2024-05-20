@@ -61,6 +61,8 @@ export default {
                 } else {
                     this.selectedStyle = {};
                 }
+            } else {
+                this.selectedStyle = {};
             }
         })
     }

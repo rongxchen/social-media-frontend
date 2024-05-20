@@ -1,11 +1,11 @@
 <template>
     <el-container class="container">
         <!-- side menu -->
-        <el-aside width="15%">
+        <el-aside width="12%">
             <SideMenu></SideMenu>
         </el-aside>
         <!-- right hand side page -->
-        <el-aside width="85%">
+        <el-aside width="88%">
             <div class="home-page">
                 <!-- search box -->
                 <div class="search-box">

@@ -1,13 +1,19 @@
 import { createStore } from "vuex";
 import { useDark } from '@vueuse/core';
+import { ChatManager, LikesNotificationManager, FollowsNotificationManager, CommentsNotificationManager } from "@/utils/chat_manager";
 
 export default createStore({
   state: {
-    url: "http://192.168.0.196:8080",
+    // url: "http://192.168.0.196:8080",
+    url: "http://localhost:8080",
     theme: useDark(),
     greyColor: "#888888",
-    likeMap: null,
-    friendMap: null,
+    likeMap: new Map(),
+    friendMap: new Map(),
+    chatManager: new ChatManager(),
+    likesNotificationManager: new LikesNotificationManager(),
+    followsNotificationManager: new FollowsNotificationManager(),
+    commentsNotificationManager: new CommentsNotificationManager(), 
   },
   getters: {
     url: (state) => state.url,
@@ -15,6 +21,10 @@ export default createStore({
     greyColor: (state) => state.greyColor,
     likeMap: (state) => state.likeMap,
     friendMap: (state) => state.friendMap,
+    chatManager: (state) => state.chatManager,
+    likesNotificationManager: (state) => state.likesNotificationManager,
+    followsNotificationManager: (state) => state.followsNotificationManager,
+    commentsNotificationManager: (state) => state.commentsNotificationManager,
   },
   mutations: {
     changeTheme(state) {

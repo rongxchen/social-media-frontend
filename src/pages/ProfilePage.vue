@@ -1,11 +1,11 @@
 <template>
     <el-container class="container">
         <!-- side menu -->
-        <el-aside width="15%">
+        <el-aside width="12%">
             <SideMenu ref="sideMenuRef"></SideMenu>
         </el-aside>
         <!-- right hand side page -->
-        <el-aside width="85%">
+        <el-aside width="88%">
             <div class="right-side-page">
                 <!-- user profile description -->
                 <div class="profile-description-container">

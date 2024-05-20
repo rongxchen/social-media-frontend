@@ -5,7 +5,24 @@
             <SideMenu ref="sideMenuRef"></SideMenu>
         </el-aside>
         <!-- chat left page -->
-        <el-aside width="23%" class="chat-list">
+        <el-aside width="25%" class="chat-list">
+            <!-- three categories of notifications -->
+            <div class="notifications">
+                <div class="notification" v-for="category of notificationCategories" :key="category">
+                    <el-badge 
+                        :hidden="$store.getters[category.name + 'Notifications'].unreadCount == 0" 
+                        :value="$store.getters[category.name + 'Notifications'].unreadCount"
+                    >
+                        <el-button :type="category.type" round plain>
+                            <el-icon>
+                                <component :is="category.icon"></component>
+                            </el-icon>
+                        </el-button>
+                    </el-badge>
+                    <!-- descriptions -->
+                    <div class="notification-description">{{ category.description }}</div>
+                </div>
+            </div>
             <!-- chat search box -->
             <el-input
                 class="chat-search-box"
@@ -20,19 +37,35 @@
                 ></ChatListBox>
             </div>
         </el-aside>
-        <!-- chat subpage -->
-        <el-aside width="65%" class="chat-subpage">
-            <ChatView
-                :chat="currChat"
-            ></ChatView>
+        <!-- subpage -->
+        <el-aside width="63%" class="chat-subpage">
+            <!-- chat page -->
+            <div v-if="currView == 'chat'">
+                <ChatView
+                    :chat="currChat"
+                ></ChatView>
+            </div>
+            <!-- likes page -->
+            <div v-else-if="currView == 'likes-notification'">
+                
+            </div>
+            <!-- follows page -->
+            <div v-else-if="currView == 'follows-notification'">
+                
+            </div>
+            <!-- comments page -->
+            <div v-else-if="currView == 'comments-notification'">
+                
+            </div>
         </el-aside>
     </el-container>
 </template>
 
 <script>
 import SideMenu from "../components/SideMenu.vue";
-import ChatListBox from "../components/ChatListBox.vue"
-import ChatView from "../components/ChatView.vue"
+import ChatListBox from "../components/ChatListBox.vue";
+import ChatView from "../components/ChatView.vue";
+import { HeartFilled, MessageFilled } from "@ant-design/icons-vue";
 
 export default {
     name: "ChatPage",
@@ -40,9 +73,32 @@ export default {
         SideMenu,
         ChatListBox,
         ChatView,
+        HeartFilled,
+        MessageFilled,
     },
     data() {
         return {
+            notificationCategories: {
+                likes: {
+                    name: "likes",
+                    type: "danger",
+                    icon: "HeartFilled",
+                    description: "Likes and Favorites"
+                },
+                follows: {
+                    name: "follows",
+                    type: "primary",
+                    icon: "UserFilled",
+                    description: "New Followers"
+                },
+                comments: {
+                    name: "comments",
+                    type: "success",
+                    icon: "MessageFilled",
+                    description: "Comments and Mentions"
+                },
+            },
+            currView: "",
             currChat: null,
             chat: {
                 "chatId": "chatId_",
@@ -118,20 +174,37 @@ export default {
                 count += chat.unreadCount;
             }
             return count;
-        }
+        },
+        openChatView(chatId) {
+            if (chatId) {
+                let found = false;
+                for (const chat of this.chatList) {
+                    if (chat.chatId == chatId) {
+                        this.currChat = chat;
+                        found = true;
+                        this.currView = "chat";
+                        break;
+                    }
+                }
+                if (!found) {
+                    this.$router.push("/chat");
+                    this.currChat = null;
+                    this.currView = "";
+                }
+            } else {
+                this.currChat = null;
+                this.currView = "";
+            }
+        },
     },
     mounted() {
         const chatId = this.$route.query.chatId;
-        if (chatId) {
-            for (const chat of this.chatList) {
-                if (chat.chatId == chatId) {
-                    this.currChat = chat;
-                    break;
-                }
+        this.openChatView(chatId);
+        this.$watch("$route.query.chatId", (chatId, oldChatId) => {
+            if (chatId !== oldChatId) {
+                this.openChatView(chatId);
             }
-        }
-        this.totalUnreadCount = this.countUnread(this.chatList);
-        this.$refs.sideMenuRef.updateChatBadgeCount(this.totalUnreadCount);
+        })
     }
 }
 </script>
@@ -149,11 +222,26 @@ export default {
 }
 .chat-list {
     padding-top: 30px;
+    padding-bottom: 30px;
 }
 .chat-search-box {
     margin-bottom: 20px;
 }
 .chat-subpage {
     padding-top: 30px;
+}
+.notifications {
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 30px;
+}
+.notification {
+    text-align: center;
+    width: 30%;
+}
+.notification-description {
+    font-size: 12px;
+    white-space: pre-wrap;
+    margin-top: 10px;
 }
 </style>

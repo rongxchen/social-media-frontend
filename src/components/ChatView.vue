@@ -1,6 +1,9 @@
 <template>
     <div ref="chatMsgListRef" v-if="chatInfo && Object.keys(chatInfo).length > 0" class="chat-view-container">
         <div class="chat-topline">
+            <el-button @click="closeChatView" class="chat-back">
+                <el-icon><ArrowLeft /></el-icon>
+            </el-button>
             <el-avatar class="chat-avatar" :src="chatInfo.avatar" :size="35"></el-avatar>
             <div class="chat-username">{{ chatInfo.username }}</div>
         </div>
@@ -25,9 +28,42 @@
         <div class="chat-send-container">
             <div class="chat-send">
                 <el-input @keyup.enter="sendMessage" v-model="msgInput.content" clearable class="chat-input"></el-input>
-                <el-button @click="sendMessage" class="chat-send-button">
-                    <el-icon><Promotion /></el-icon>
-                </el-button>
+                <div v-if="msgInput.content.trim() !== ''">
+                    <el-button type="primary" @click="sendMessage" class="chat-send-button">
+                        <el-icon><Promotion /></el-icon>
+                    </el-button>
+                </div>
+                <div v-else>
+                    <el-dropdown>
+                        <el-button type="info" class="chat-send-button">
+                            <el-icon><Plus /></el-icon>
+                        </el-button>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <!-- image -->
+                                <el-dropdown-item>
+                                    <el-icon><Picture /></el-icon>
+                                    Image
+                                </el-dropdown-item>
+                                <!-- video -->
+                                <el-dropdown-item>
+                                    <el-icon><VideoPlay /></el-icon>
+                                    Videos
+                                </el-dropdown-item>
+                                <!-- audio -->
+                                <el-dropdown-item>
+                                    <el-icon><Headset /></el-icon>
+                                    Audios
+                                </el-dropdown-item>
+                                <!-- files -->
+                                <el-dropdown-item>
+                                    <el-icon><Files /></el-icon>
+                                    Files
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
+                </div>
             </div>
         </div>
     </div>
@@ -67,14 +103,14 @@ export default {
                 "senderId": this.userInfo.appId})
             this.msgInput.content = "";
         },
+        closeChatView() {
+            this.$router.push("/chat");
+        },
     },
     mounted() {
         this.$watch("chat", (newVal) => {
-            if (newVal) {
-                this.chatInfo = newVal;
-            }
+            this.chatInfo = newVal;
         })
-        console.log(this.topLineStyle);
         setTimeout(() => {
             this.scrollToBottom = () => {
                 this.$refs.chatMsgListRef.scrollTop = this.$refs.chatMsgListRef.scrollHeight;
@@ -101,7 +137,7 @@ export default {
     position: fixed;
     display: flex;
     align-items: center;
-    height: 50px;
+    height: 60px;
     width: 500px;
     z-index: 999;
 }
@@ -139,5 +175,9 @@ export default {
 }
 .chat-send-button {
     margin-left: 5px;
+}
+.chat-back {
+    margin-right: 15px;
+    border: none;
 }
 </style>

@@ -46,15 +46,21 @@
                             <div> {{ info }} </div>
                         </div>
                     </span>
-                    <div v-if="userInfo.appId != user.appId">
-                        <el-button @click="follow(userInfo.appId)" v-if="!this.$store.getters.friendMap.get('follows').has(userInfo.appId)" type="danger" plain round size=small>
-                            Follow
-                            <el-icon><Plus /></el-icon>
+                    <div style="display: flex;">
+                        <el-button @click="openChatView" type="danger" round plain size="small">
+                            Chat
+                            <el-icon><Promotion /></el-icon>
                         </el-button>
-                        <el-button @click="unfollow(userInfo.appId)" v-else type="info" plain round size="small">
-                            Followed
-                            <el-icon><Check /></el-icon>
-                        </el-button>
+                        <div v-if="userInfo.appId != user.appId" style="margin-left: 15px;">
+                            <el-button @click="follow(userInfo.appId)" v-if="!this.$store.getters.friendMap.get('follows').has(userInfo.appId)" type="danger" plain round size=small>
+                                <el-icon><User /></el-icon>
+                                <el-icon><Plus /></el-icon>
+                            </el-button>
+                            <el-button @click="unfollow(userInfo.appId)" v-else type="info" plain round size="small">
+                                <el-icon><User /></el-icon>
+                                <el-icon><Check /></el-icon>
+                            </el-button>
+                        </div>
                     </div>
                 </div>
                 <!-- tab selection -->
@@ -120,6 +126,7 @@ import PostCard from "./PostCard.vue";
 import PostDetailContainerForUser from "./PostDetailContainerForUser.vue";
 import { follow, unfollow } from "@/utils/methods/follows.js";
 import { likePost, deletePost, favoritePost } from "@/utils/methods/posts.js";
+import { generateChatId } from "@/utils/methods/chat.js";
 
 const url = store.getters.url;
 
@@ -262,6 +269,13 @@ export default {
                         this.$message.error(res.data.message);
                     }
                 })
+        },
+        openChatView() {
+            if (this.currUserId) {
+                const chatId = generateChatId(this.currUserId, this.userInfo);
+                console.log(chatId);
+                // this.$router.push('/chat?appId=' + this.currUserId);
+            }
         }
     },
     created() {

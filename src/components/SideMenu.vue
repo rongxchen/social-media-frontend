@@ -101,7 +101,7 @@ export default {
                     path: "/chat",
                     label: "Chat",
                     icon: "ChatDotSquare",
-                    badgeCount: 0,
+                    badgeCount: this.$store.getters.totalUnread,
                 },
                 {
                     path: "/profile",

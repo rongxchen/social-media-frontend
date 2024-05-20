@@ -38,9 +38,10 @@
         <!-- img preview dialog -->
         <el-dialog
             v-model="msgImgPreview.visible"
+            width="40%"
             @close="() => {this.msgImgPreview.visible = false; this.msgImgPreview.imgSrc = ''}" 
         ><div class="preview-img">
-            <img :src="msgImgPreview.imgSrc" />
+            <img style="max-width: 400px; max-height: 350px;" :src="msgImgPreview.imgSrc" />
         </div>
         </el-dialog>
     </div>
