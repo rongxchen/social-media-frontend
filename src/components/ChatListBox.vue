@@ -53,10 +53,10 @@ export default {
         }
     },
     mounted() {
-        this.selectedStyle = this.$route.query.appId && this.$route.query.appId == this.chatBoxInfo.appId ? this.lightGreyStyle : {};
-        this.$watch("$route.query.appId", (newVal) => {
+        this.selectedStyle = this.$route.query.chatId && this.$route.query.chatId == this.chatBoxInfo.chatId ? this.lightGreyStyle : {};
+        this.$watch("$route.query.chatId", (newVal) => {
             if (newVal) {
-                if (newVal == this.chatBoxInfo.appId) {
+                if (newVal == this.chatBoxInfo.chatId) {
                     this.selectedStyle = this.lightGreyStyle;
                 } else {
                     this.selectedStyle = {};

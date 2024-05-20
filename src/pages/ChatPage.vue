@@ -1,37 +1,30 @@
 <template>
     <el-container class="container">
         <!-- side menu -->
-        <el-aside width="15%">
-            <SideMenu></SideMenu>
+        <el-aside width="12%">
+            <SideMenu ref="sideMenuRef"></SideMenu>
         </el-aside>
-        <!-- right hand side page -->
-        <el-aside width="85%">
-            <el-container class="right-side-page">
-                <!-- chat left page -->
-                <el-aside class="chat-list">
-                    <!-- unread message -->
-                    <div class="chat-unread-count">{{'new messages: ' + totalUnread}}</div>
-                    <!-- chat search box -->
-                    <el-input
-                        class="chat-search-box"
-                        placeholder="search for messages"
-                        clearable
-                    ></el-input>
-                    <!-- chat list -->
-                    <div style="margin-bottom: 8px;" v-for="chat in chatList" :key="chat">
-                        <ChatListBox
-                            :chat-box-info="chat"
-                            @go-chat="goChat(chat)"
-                        ></ChatListBox>
-                    </div>
-                </el-aside>
-                <!-- chat subpage -->
-                <el-aside class="chat-subpage">
-                    <ChatView
-                        :chat="currChat"
-                    ></ChatView>
-                </el-aside>
-            </el-container>
+        <!-- chat left page -->
+        <el-aside width="23%" class="chat-list">
+            <!-- chat search box -->
+            <el-input
+                class="chat-search-box"
+                placeholder="search for messages"
+                clearable
+            ></el-input>
+            <!-- chat list -->
+            <div style="margin-bottom: 8px;" v-for="chat in chatList" :key="chat">
+                <ChatListBox
+                    :chat-box-info="chat"
+                    @go-chat="goChat(chat)"
+                ></ChatListBox>
+            </div>
+        </el-aside>
+        <!-- chat subpage -->
+        <el-aside width="65%" class="chat-subpage">
+            <ChatView
+                :chat="currChat"
+            ></ChatView>
         </el-aside>
     </el-container>
 </template>
@@ -74,20 +67,28 @@ export default {
     "msgId": "msg1",
     "content": "这是第一条消息",
     "timestamp": "2023-10-01",
+    "displayTime": "2023-10-01",
     "senderId": "appId_1",
-    "avatar": ""
+    "avatar": "",
+    "type": "img",
+    "imgSrc": "https://myappsocialmediastorage.blob.core.windows.net/media/users/avatar/d763c5b89af540a0be1c0311152212c1.jpg",
   },
+  
   {
     "msgId": "msg2",
     "content": "这是第二条消息",
     "timestamp": "2023-10-02",
-    "senderId": "appId_1"
+    "displayTime": "2023-10-02",
+    "senderId": "appId_1",
+    "type": "text",
   },
   {
     "msgId": "msg3",
     "content": "你好呀",
     "timestamp": "2023-10-03",
-    "senderId": "64af2195f02f4e1496c6e58969824ddb"
+    "displayTime": "2023-10-02",
+    "senderId": "64af2195f02f4e1496c6e58969824ddb",
+    "type": "text",
   }
 ],
                     "createdAt": "",
@@ -108,27 +109,29 @@ export default {
     },
     methods: {
         goChat(chat) {
-            this.$router.push("/chat?appId=" + chat.appId);
+            this.$router.push("/chat?chatId=" + chat.chatId);
             this.currChat = chat;
         },
         countUnread(chats) {
-            this.totalUnread = 0;
+            let count = 0;
             for (const chat of chats) {
-                this.totalUnread += chat.unreadCount;
+                count += chat.unreadCount;
             }
+            return count;
         }
     },
     mounted() {
-        const appId = this.$route.query.appId;
-        if (appId) {
+        const chatId = this.$route.query.chatId;
+        if (chatId) {
             for (const chat of this.chatList) {
-                if (chat.appId == appId) {
+                if (chat.chatId == chatId) {
                     this.currChat = chat;
                     break;
                 }
             }
         }
-        this.countUnread(this.chatList);
+        this.totalUnreadCount = this.countUnread(this.chatList);
+        this.$refs.sideMenuRef.updateChatBadgeCount(this.totalUnreadCount);
     }
 }
 </script>
@@ -137,27 +140,20 @@ export default {
 .container {
     height: 100vh;
 }
-.right-side-page {
-    margin-top: 30px;
+.chat-list, .chat-subpage {
+    /* margin-top: 30px; */
     margin-left: 2px;
     margin-right: 2px;
     padding-left: 4px;
     padding-right: 4px;
-    display: flex;
-    justify-content: space-between;
-    height: 100vh;
 }
 .chat-list {
-    width: 25%;
-}
-.chat-unread-count {
-    margin-bottom: 10px;
-    text-align: center;
+    padding-top: 30px;
 }
 .chat-search-box {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 .chat-subpage {
-    width: 74.5%;
+    padding-top: 30px;
 }
 </style>

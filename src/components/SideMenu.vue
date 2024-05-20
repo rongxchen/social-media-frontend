@@ -23,6 +23,9 @@
                             <component :is="route.icon"></component>
                         </el-icon>
                         {{ route.label }}
+                        <el-tag v-if="route.badgeCount" style="margin-left: 10px;" round effect="light" type="danger" size="small">
+                            {{ route.badgeCount }}
+                        </el-tag>
                     </template>
                     <!-- sub menus -->
                     <el-menu-item v-for="sub in route.children" :index="sub.path" :key="sub">
@@ -31,6 +34,9 @@
                                 <component :is="sub.icon"></component>
                             </el-icon>
                             {{ sub.label }}
+                            <el-tag v-if="route.badgeCount" style="margin-left: 10px;" round effect="light" type="danger" size="small">
+                                {{ route.badgeCount }}
+                            </el-tag>
                         </template>
                     </el-menu-item>
                 </el-sub-menu>
@@ -41,6 +47,9 @@
                             <component :is="route.icon"></component>
                         </el-icon>
                         {{ route.label }}
+                        <el-tag v-if="route.badgeCount && route.badgeCount > 0" style="margin-left: 10px;" round effect="light" type="danger" size="small">
+                            {{ route.badgeCount <= 99 ? route.badgeCount : '99+' }}
+                        </el-tag>
                     </template>
                 </el-menu-item>
             </div>
@@ -91,7 +100,8 @@ export default {
                 {
                     path: "/chat",
                     label: "Chat",
-                    icon: "ChatDotSquare"
+                    icon: "ChatDotSquare",
+                    badgeCount: 0,
                 },
                 {
                     path: "/profile",
@@ -123,6 +133,14 @@ export default {
             localStorage.removeItem("refreshToken");
             localStorage.removeItem("userInfo");
             this.$router.push("/login");
+        },
+        updateChatBadgeCount(newMsgCount) {
+            for (const route of this.routes) {
+                if (route.path == "/chat") {
+                    route.badgeCount = newMsgCount;
+                    break;
+                }
+            }
         }
     },
     mounted() {

@@ -1,17 +1,18 @@
 <template>
-    <div v-if="chatInfo && Object.keys(chatInfo).length > 0" class="chat-view-container">
+    <div ref="chatMsgListRef" v-if="chatInfo && Object.keys(chatInfo).length > 0" class="chat-view-container">
         <div class="chat-topline">
             <el-avatar class="chat-avatar" :src="chatInfo.avatar" :size="35"></el-avatar>
             <div class="chat-username">{{ chatInfo.username }}</div>
         </div>
         <div class="chat-messages">
             <div v-if="chatInfo.messages.length > 0">
-                <div v-for="message of chat.messages" :key="message">
+                <div v-for="i in chat.messages.length" :key="i">
                     <div class="chat-message">
                         <!-- chat content -->
                         <ChatMessageBox
-                            :message="message"
+                            :message="chat.messages[i-1]"
                             :user="userInfo"
+                            :last-msg-display-time="i == 1 ? null : chat.messages[i-1-1].displayTime"
                         ></ChatMessageBox>
                     </div>
                 </div>
@@ -23,14 +24,14 @@
         <!-- input -->
         <div class="chat-send-container">
             <div class="chat-send">
-                <el-input clearable class="chat-input"></el-input>
-                <el-button class="chat-send-button">
+                <el-input @keyup.enter="sendMessage" v-model="msgInput.content" clearable class="chat-input"></el-input>
+                <el-button @click="sendMessage" class="chat-send-button">
                     <el-icon><Promotion /></el-icon>
                 </el-button>
             </div>
         </div>
     </div>
-    <div v-else>
+    <div ref="chatMsgListRef" v-else>
         <el-empty description=""></el-empty>
     </div>
 </template>
@@ -47,7 +48,25 @@ export default {
         return {
             userInfo: JSON.parse(localStorage.getItem("userInfo")),
             chatInfo: this.chat,
+            msgInput: {
+                content: "",
+            },
         }
+    },
+    methods: {
+        sendMessage() {
+            this.msgInput.content = this.msgInput.content.trim();
+            if (this.msgInput.content == "") {
+                this.$message.warning("message content cannot be empty");
+                return;
+            }
+            this.chatInfo.messages.push({"msgId": "m1", 
+                "content": this.msgInput.content, 
+                "displayTime": "now",
+                "type": "text",
+                "senderId": this.userInfo.appId})
+            this.msgInput.content = "";
+        },
     },
     mounted() {
         this.$watch("chat", (newVal) => {
@@ -55,6 +74,18 @@ export default {
                 this.chatInfo = newVal;
             }
         })
+        console.log(this.topLineStyle);
+        setTimeout(() => {
+            this.scrollToBottom = () => {
+                this.$refs.chatMsgListRef.scrollTop = this.$refs.chatMsgListRef.scrollHeight;
+            }
+            this.scrollToBottom();
+            this.$watch("chatInfo.messages.length", () => {
+                this.$nextTick(() => {
+                    this.scrollToBottom();
+                })
+            })
+        }, 100);
     },
 }
 </script>
@@ -63,11 +94,16 @@ export default {
 .chat-view-container {
     padding-left: 20px;
     padding-right: 20px;
+    overflow-y: auto;
+    height: 450px;
 }
 .chat-topline {
+    position: fixed;
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
+    height: 50px;
+    width: 500px;
+    z-index: 999;
 }
 .chat-username {
     display: flex;
@@ -79,9 +115,14 @@ export default {
     margin-top: auto;
     margin-bottom: auto;
 }
+.chat-messages {
+    padding-top: 50px;
+    position: relative;
+    z-index: 1;
+}
 .chat-message {
     display: flex;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 .chat-send-container {
     position: fixed;
