@@ -103,6 +103,7 @@ export default {
             if (!notification.read) {
                 axios.put(url + "/api/notifications/read-all?ids=" + notification.notificationId);
                 notification.read = true;
+                this.$store.getters.commentsNotificationManager.recountUnread();
             }
         },
         readAll() {
