@@ -50,6 +50,12 @@
                         ></PostCard>
                     </div>
                 </div>
+                <!-- expand more button -->
+                <div class="expand-more">
+                    <a-spin :spinning="pagination.loading">
+                        <el-button :disabled="!pagination.hasMore" v-text="pagination.placeholder" @click="getPosts()" class="expand-more"></el-button>
+                    </a-spin>
+                </div>
                 <!-- post detail container -->
                 <div style="width: 100%;">
                     <el-drawer v-model="postDetailDrawer.visible" size="60%" :with-header="false">
@@ -88,8 +94,9 @@ export default {
             posts: [],
             postIndexArray: [],
             pagination: {
-                currPage: 1,
                 loading: false,
+                hasMore: true,
+                placeholder: "expand more...",
             },
             postDetailDrawer: {
                 visible: false,
@@ -105,6 +112,12 @@ export default {
             this.pagination.loading = true;
             axios.get(url + "/api/posts?offset=" + this.posts.length).then((res) => {
                 const data = res.data.data;
+                if (data.length == 0) {
+                    this.pagination.hasMore = false;
+                    this.pagination.placeholder = "no more posts...";
+                    this.pagination.loading = false;
+                    return;
+                }
                 const arr = [];
                 for (let i = this.posts.length; i < this.posts.length + data.length; i++) {
                     arr.push(i);
@@ -181,5 +194,8 @@ export default {
 .posts-container-card {
     width: 100%;
     margin-bottom: 20px;
+}
+.expand-more {
+    width: 100%;
 }
 </style>

@@ -70,6 +70,12 @@
                         ></CommentCard>
                         <el-divider></el-divider>
                     </div>
+                    <!-- expand more -->
+                    <div class="expand-more">
+                        <a-spin :spinning="pagination.loading">
+                            <el-button @click="fetchComments()" class="expand-more" :disabled="!pagination.hasMore" v-text="pagination.placeholder"></el-button>
+                        </a-spin>
+                    </div>
                 </div>
                 <div v-else>
                     <el-empty description="no comments yet..."></el-empty>
@@ -186,6 +192,11 @@ export default {
             userDetail: {
                 visible: false,
                 userId: "",
+            },
+            pagination: {
+                hasMore: true,
+                loading: false,
+                placeholder: "expand more...",
             }
         }
     },
@@ -229,6 +240,7 @@ export default {
                 return;
             }
             this.reply.loading = true;
+            this.reply.dialogVisible = false;
             axios.post(url + "/api/comments", {
                 content: this.reply.content, postId: this.post.postId,
                 parentId: this.reply.parentId, replyCommentId: this.reply.replyCommentId,
@@ -241,7 +253,6 @@ export default {
                         duration: 1000,
                     })
                     this.reply.content = "";
-                    this.reply.dialogVisible = false;
                     const comment = res.data.data;
                     this.updateCommentCount(comment);
                     if (comment.postId == comment.parentId) {
@@ -267,13 +278,22 @@ export default {
             })
         },
         fetchComments() {
+            this.pagination.loading = true;
             axios.get(url + "/api/comments?postId=" + this.post.postId + "&offset=" + this.comments.list.length).then((res) => {
                 if (res.data.code == 0) {
-                    this.comments.list = this.comments.list.concat(res.data.data.list);
+                    const data = res.data.data.list;
+                    if (data.length == 0) {
+                        this.pagination.placeholder = "no more comments...";
+                        this.pagination.loading = false;
+                        this.pagination.hasMore = false;
+                        return;
+                    }
+                    this.comments.list = this.comments.list.concat(data);
                     for (const comment of this.comments.list) {
                         comment.replies = [];
                         comment.loading = false;
                     }
+                    this.pagination.loading = false;
                 }
             })
         },
@@ -430,5 +450,8 @@ export default {
 }
 .btn-text {
     color: #888888;
+}
+.expand-more {
+    width: 100%;
 }
 </style>

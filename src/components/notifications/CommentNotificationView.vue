@@ -35,7 +35,7 @@
                                 <el-icon><Close /></el-icon>
                             </el-button>
                         </div>
-                        <div class="meta">{{ 'replied to you at ' + notification.dateTime }}</div>
+                        <div class="meta">{{ 'replied to you: ' + notification.dateTime }}</div>
                         <div @click="openPostDetail(notification)" class="content">{{ notification.commentContent }}</div>
                     </div>
                 </div>
@@ -158,10 +158,10 @@ export default {
 .meta {
     color: #888888;
     font-size: 12px;
-    margin-top: 5px;
 }
 .content {
     margin-top: 5px;
+    font-size: 16px;
 }
 .post-title {
     margin-top: 10px;
