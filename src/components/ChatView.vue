@@ -77,6 +77,7 @@ import ChatMessageBox from "./ChatMessageBox.vue";
 
 export default {
     props: ["chat"],
+    emits: ["closeView"],
     components: {
         ChatMessageBox,
     },
@@ -104,7 +105,7 @@ export default {
             this.msgInput.content = "";
         },
         closeChatView() {
-            this.$router.push("/chat");
+            this.$emit("closeView");
         },
     },
     mounted() {

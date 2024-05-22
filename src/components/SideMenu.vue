@@ -101,7 +101,7 @@ export default {
                     path: "/chat",
                     label: "Chat",
                     icon: "ChatDotSquare",
-                    badgeCount: this.$store.getters.totalUnread,
+                    badgeCount: 0,
                 },
                 {
                     path: "/profile",
@@ -141,11 +141,20 @@ export default {
                     break;
                 }
             }
+        },
+        countUnread() {
+            const unread = 
+                this.$store.getters.commentsNotificationManager.getUnreadCount() + 
+                this.$store.getters.likesNotificationManager.getUnreadCount() + 
+                this.$store.getters.followsNotificationManager.getUnreadCount() + 
+                this.$store.getters.chatManager.getUnreadCount();
+            this.updateChatBadgeCount(unread);
         }
     },
     mounted() {
         this.getUserInfo();
         this.currentRoute = (this.$route.path == "/" || this.$route.path == "/login")? "/login": this.$route.path;
+        this.countUnread();
     }
 }
 </script>

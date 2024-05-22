@@ -10,10 +10,10 @@
             <div class="notifications">
                 <div class="notification" v-for="category of notificationCategories" :key="category">
                     <el-badge 
-                        :hidden="$store.getters[category.name + 'Notifications'].unreadCount == 0" 
-                        :value="$store.getters[category.name + 'Notifications'].unreadCount"
+                        :hidden="$store.getters[category.name + 'NotificationManager'].getUnreadCount() == 0" 
+                        :value="$store.getters[category.name + 'NotificationManager'].getUnreadCount()"
                     >
-                        <el-button :type="category.type" round plain>
+                        <el-button @click="goToView(category.name)" :type="category.type" round plain>
                             <el-icon>
                                 <component :is="category.icon"></component>
                             </el-icon>
@@ -43,19 +43,22 @@
             <div v-if="currView == 'chat'">
                 <ChatView
                     :chat="currChat"
+                    @close-view="closeView"
                 ></ChatView>
             </div>
             <!-- likes page -->
-            <div v-else-if="currView == 'likes-notification'">
+            <div v-else-if="currView == 'likes'">
                 
             </div>
             <!-- follows page -->
-            <div v-else-if="currView == 'follows-notification'">
+            <div v-else-if="currView == 'follows'">
                 
             </div>
             <!-- comments page -->
-            <div v-else-if="currView == 'comments-notification'">
-                
+            <div v-else-if="currView == 'comments'">
+                <CommentNotificationView
+                    @close-view="closeView"
+                ></CommentNotificationView>
             </div>
         </el-aside>
     </el-container>
@@ -65,7 +68,12 @@
 import SideMenu from "../components/SideMenu.vue";
 import ChatListBox from "../components/ChatListBox.vue";
 import ChatView from "../components/ChatView.vue";
+import CommentNotificationView from "../components/notifications/CommentNotificationView.vue";
 import { HeartFilled, MessageFilled } from "@ant-design/icons-vue";
+import axios from "axios";
+import store from "@/store";
+
+const url = store.getters.url;
 
 export default {
     name: "ChatPage",
@@ -75,6 +83,7 @@ export default {
         ChatView,
         HeartFilled,
         MessageFilled,
+        CommentNotificationView,
     },
     data() {
         return {
@@ -115,7 +124,7 @@ export default {
                 const chat = {
                     "chatId": "chatId_",
                     "chatType": "p2p",
-                    "appId": "appId_",
+                    "appId": "5538e1372bb8454798147bb7293ac529",
                     "username": "username_",
                     "avatar": "https://myappsocialmediastorage.blob.core.windows.net/media/users/avatar/d763c5b89af540a0be1c0311152212c1.jpg",
                     "messages": [
@@ -124,7 +133,7 @@ export default {
     "content": "这是第一条消息",
     "timestamp": "2023-10-01",
     "displayTime": "2023-10-01",
-    "senderId": "appId_1",
+    "senderId": "5538e1372bb8454798147bb7293ac529",
     "avatar": "",
     "type": "img",
     "imgSrc": "https://myappsocialmediastorage.blob.core.windows.net/media/users/avatar/d763c5b89af540a0be1c0311152212c1.jpg",
@@ -135,7 +144,7 @@ export default {
     "content": "这是第二条消息",
     "timestamp": "2023-10-02",
     "displayTime": "2023-10-02",
-    "senderId": "appId_1",
+    "senderId": "5538e1372bb8454798147bb7293ac529",
     "type": "text",
   },
   {
@@ -152,7 +161,6 @@ export default {
                     "unreadCount": x,
                 };
                 const c = JSON.parse(JSON.stringify(chat));
-                c.appId += x;
                 c.chatId += x;
                 c.username += x;
                 if (x % 2 == 0) {
@@ -165,7 +173,7 @@ export default {
     },
     methods: {
         goChat(chat) {
-            this.$router.push("/chat?chatId=" + chat.chatId);
+            this.$router.push("/chat?appId=" + chat.appId);
             this.currChat = chat;
         },
         countUnread(chats) {
@@ -175,36 +183,50 @@ export default {
             }
             return count;
         },
-        openChatView(chatId) {
-            if (chatId) {
-                let found = false;
-                for (const chat of this.chatList) {
-                    if (chat.chatId == chatId) {
-                        this.currChat = chat;
-                        found = true;
-                        this.currView = "chat";
-                        break;
-                    }
-                }
-                if (!found) {
-                    this.$router.push("/chat");
-                    this.currChat = null;
-                    this.currView = "";
-                }
-            } else {
+        openChatView(appId) {
+            this.currView = "chat";
+            if (appId == null) {
                 this.currChat = null;
-                this.currView = "";
+                return;
+            }
+            for (const chat of this.chatList) {
+                if (chat.appId == appId) {
+                    this.currChat = chat;
+                    break;
+                }
             }
         },
+        goToView(view) {
+            this.currView = view;
+        },
+        closeView() {
+            if (this.currView == "chat") {
+                this.currChat = null;
+                this.$router.push("/chat");
+            } else {
+                this.currView = "chat";
+            }
+        },
+        initNotifications() {
+            // const res1 = axios.get(url + "/api/notifications/likes?skip=0");
+            // const res2 = axios.get(url + "/api/notifications/follows?skip=0");
+            const res3 = axios.get(url + "/api/notifications/comments?skip=0");
+            Promise.all([res3]).then((responses) => {
+                if (responses[0].data.code == 0) {
+                    store.getters.commentsNotificationManager.init(responses[0].data.data);
+                }
+            })
+        }
     },
     mounted() {
-        const chatId = this.$route.query.chatId;
-        this.openChatView(chatId);
-        this.$watch("$route.query.chatId", (chatId, oldChatId) => {
-            if (chatId !== oldChatId) {
-                this.openChatView(chatId);
+        const appId = this.$route.query.appId;
+        this.openChatView(appId);
+        this.$watch("$route.query.appId", (appId, oldAppId) => {
+            if (appId !== oldAppId) {
+                this.openChatView(appId);
             }
         })
+        this.initNotifications();
     }
 }
 </script>

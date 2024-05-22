@@ -4,16 +4,16 @@ import { ChatManager, LikesNotificationManager, FollowsNotificationManager, Comm
 
 export default createStore({
   state: {
-    // url: "http://192.168.0.196:8080",
-    url: "http://localhost:8080",
+    url: "http://192.168.0.196:8080",
+    // url: "http://localhost:8080",
     theme: useDark(),
     greyColor: "#888888",
-    likeMap: new Map(),
-    friendMap: new Map(),
+    likeMap: null,
+    friendMap: null,
     chatManager: new ChatManager(),
     likesNotificationManager: new LikesNotificationManager(),
     followsNotificationManager: new FollowsNotificationManager(),
-    commentsNotificationManager: new CommentsNotificationManager(), 
+    commentsNotificationManager: new CommentsNotificationManager(),
   },
   getters: {
     url: (state) => state.url,

@@ -155,7 +155,6 @@ import { follow, unfollow } from "@/utils/methods/follows.js";
 const url = store.getters.url;
 
 export default {
-    name: "HomePage",
     props: ["currPost"],
     emits: ["closeDrawer", "likePost", "favoritePost"],
     components: {

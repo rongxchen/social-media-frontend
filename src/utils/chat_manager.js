@@ -1,14 +1,3 @@
-import axios from "axios";
-import store from "@/store";
-
-const url = store.getters.url;
-
-const fetchNotoficationHistory = (category) => {
-    return axios.get(url + "/api/notifications/" + category).then((res) => {
-        return res;
-    })
-}
-
 class BaseManager {
     constructor(idField) {
         this.idField = idField;
@@ -16,10 +5,8 @@ class BaseManager {
         this.unreadCount = 0;
     }
 
-    init(category) {
-        fetchNotoficationHistory(category).then((res) => {
-            this.list = res.data.data;
-        })
+    init(data) {
+        this.list = data;
         this.recountUnread();
     }
 
@@ -41,7 +28,13 @@ class BaseManager {
             }
         }
         this.list = array;
+        this.recountUnread();
         return toBeDeleted;
+    }
+
+    clear() {
+        this.list = [];
+        this.unreadCount = 0;
     }
 
     pushItemFront(item) {
@@ -91,7 +84,6 @@ class BaseManager {
 class ChatManager extends BaseManager {
     constructor() {
         super("chatId");
-        super.init("chats");
     }
 
     pushMessage(chatId, message) {
@@ -133,6 +125,7 @@ class ChatManager extends BaseManager {
     }
 
     getUnreadCount() {
+        this.recountUnread();
         return this.unreadCount;
     }
 
@@ -146,22 +139,19 @@ class ChatManager extends BaseManager {
 
 class LikesNotificationManager extends BaseManager {
     constructor() {
-        super("");
-        super.init("likes");
+        super("notificationId");
     }
 }
 
 class FollowsNotificationManager extends BaseManager {
     constructor() {
-        super("");
-        super.init("follows");
+        super("notificationId");
     }
 }
 
 class CommentsNotificationManager extends BaseManager {
     constructor() {
-        super("");
-        super.init("comments");
+        super("notificationId");
     }
 }
 

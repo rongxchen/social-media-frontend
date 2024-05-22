@@ -65,3 +65,18 @@ axios.interceptors.response.use((response) => {
     }
     return Promise.reject(error);
 });
+
+// initialize friendmap and likemap
+const res1 = axios.get(url + "/api/posts/record");
+const res2 = axios.get(url + "/api/users/friends");
+
+Promise.all([res1, res2].filter(x => x != null)).then(responses => {
+    if (responses[0].data.code === 0) {
+        const data = responses[0].data.data;
+        store.commit("resetLikeMap", data);
+    }
+    if (responses[1].data.code === 0) {
+        const data = responses[1].data.data;
+        store.commit("resetFriendMap", data);
+    }
+})

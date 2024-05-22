@@ -144,36 +144,12 @@ export default {
                 }
             })
         },
-        async getLikesRecord() {
-            await axios.get(url + "/api/posts/record").then((res) => {
-                if (res.data.code === 0) {
-                    const data = res.data.data;
-                    store.commit("resetLikeMap", data);
-                }
-            })
-        },
-        async getFriendMap() {
-            await axios.get(url + "/api/users/friends").then((res) => {
-                if (res.data.code === 0) {
-                    const data = res.data.data;
-                    store.commit("resetFriendMap", data);
-                }
-            })
-        },
         closePostDetailContainer() {
             this.postDetailDrawer.visible = false; 
             this.postDetailDrawer.currPost = null;
         },
     },
-    async created() {
-        if (store.getters.friendMap == null) {
-            await this.getFriendMap();
-        }
-    },
-    async mounted() {
-        if (store.getters.likeMap == null) {
-            await this.getLikesRecord();
-        }
+    mounted() {
         this.getPosts();
     }
 }
