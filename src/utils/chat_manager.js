@@ -39,7 +39,7 @@ class BaseManager {
 
     pushItemFront(item) {
         this.list = [item].concat(this.list);
-        this.unreadCount++;
+        this.recountUnread();
     }
 
     markRead(id) {
@@ -50,6 +50,7 @@ class BaseManager {
                 break;
             }
         }
+        this.recountUnread();
     }
 
     getItem(id) {

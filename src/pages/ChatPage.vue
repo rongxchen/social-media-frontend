@@ -10,8 +10,8 @@
             <div class="notifications">
                 <div class="notification" v-for="category of notificationCategories" :key="category">
                     <el-badge 
-                        :hidden="$store.getters[category.name + 'NotificationManager'].getUnreadCount() == 0" 
-                        :value="$store.getters[category.name + 'NotificationManager'].getUnreadCount()"
+                        :hidden="$store.getters[category.name + 'NotificationManager'].unreadCount == 0" 
+                        :value="$store.getters[category.name + 'NotificationManager'].unreadCount"
                     >
                         <el-button @click="goToView(category.name)" :type="category.type" round plain>
                             <el-icon>
@@ -52,7 +52,9 @@
             </div>
             <!-- follows page -->
             <div v-else-if="currView == 'follows'">
-                
+                <FollowNotificationView
+                    @close-view="closeView"
+                ></FollowNotificationView>
             </div>
             <!-- comments page -->
             <div v-else-if="currView == 'comments'">
@@ -69,6 +71,7 @@ import SideMenu from "../components/SideMenu.vue";
 import ChatListBox from "../components/ChatListBox.vue";
 import ChatView from "../components/ChatView.vue";
 import CommentNotificationView from "../components/notifications/CommentNotificationView.vue";
+import FollowNotificationView from "../components/notifications/FollowNotificationView.vue";
 import { HeartFilled, MessageFilled } from "@ant-design/icons-vue";
 import axios from "axios";
 import store from "@/store";
@@ -84,6 +87,7 @@ export default {
         HeartFilled,
         MessageFilled,
         CommentNotificationView,
+        FollowNotificationView,
     },
     data() {
         return {
@@ -198,6 +202,14 @@ export default {
         },
         goToView(view) {
             this.currView = view;
+            if (view == "follows") {
+                if (this.$store.getters.followsNotificationManager.getUnreadCount() > 0) {
+                    this.$store.getters.followsNotificationManager.list.map(x => x.read = true);
+                    const ids = this.$store.getters.followsNotificationManager.list.map(x => x.notificationId).join(",");
+                    axios.put(url + "/api/notifications/read-all?ids=" + ids);
+                    this.$store.getters.followsNotificationManager.recountUnread();
+                }
+            }
         },
         closeView() {
             if (this.currView == "chat") {
@@ -207,18 +219,21 @@ export default {
                 this.currView = "chat";
             }
         },
-        initNotifications() {
+        async initNotifications() {
             // const res1 = axios.get(url + "/api/notifications/likes?skip=0");
-            // const res2 = axios.get(url + "/api/notifications/follows?skip=0");
-            const res3 = axios.get(url + "/api/notifications/comments?skip=0");
-            Promise.all([res3]).then((responses) => {
-                if (responses[0].data.code == 0) {
-                    store.getters.commentsNotificationManager.init(responses[0].data.data);
+            await axios.get(url + "/api/notifications/follows?skip=0").then((res) => {
+                if (res.data.code == 0) {
+                    store.getters.followsNotificationManager.init(res.data.data);
+                }
+            })
+            await axios.get(url + "/api/notifications/comments?skip=0").then((res) => {
+                if (res.data.code == 0) {
+                    store.getters.commentsNotificationManager.init(res.data.data);
                 }
             })
         }
     },
-    mounted() {
+    async mounted() {
         const appId = this.$route.query.appId;
         this.openChatView(appId);
         this.$watch("$route.query.appId", (appId, oldAppId) => {
@@ -226,7 +241,7 @@ export default {
                 this.openChatView(appId);
             }
         })
-        this.initNotifications();
+        await this.initNotifications();
     }
 }
 </script>

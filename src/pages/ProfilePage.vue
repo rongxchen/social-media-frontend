@@ -312,9 +312,9 @@ export default {
             this.openFollows("followers");
         },
     },
-    created() {
-        this.friend.follows.count = store.getters.friendMap.get("follows").size;
-        this.friend.followers.count = store.getters.friendMap.get("followers").size;
+    mounted() {
+        this.friend.follows.count = this.$store.getters.friendMap.get("follows").size;
+        this.friend.followers.count = this.$store.getters.friendMap.get("followers").size;
     },
 }
 </script>

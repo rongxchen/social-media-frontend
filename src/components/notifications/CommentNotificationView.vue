@@ -110,6 +110,7 @@ export default {
                 const ids = this.$store.getters.commentsNotificationManager.list.map(x => x.notificationId).join(",");
                 axios.put(url + "/api/notifications/read-all?ids=" + ids);
                 this.$store.getters.commentsNotificationManager.list.map(x => x.read = true);
+                this.recountUnread();
             }
         },
         clearAll() {
@@ -117,11 +118,13 @@ export default {
             if (ids.trim() != "") {
                 axios.delete(url + "/api/notifications/clear-all?ids=" + ids);
                 this.$store.getters.commentsNotificationManager.clear();
+                this.recountUnread();
             }
         },
         deleteOne(id) {
             axios.delete(url + "/api/notifications/clear-all?ids=" + id);
             this.$store.getters.commentsNotificationManager.delete(id);
+            this.recountUnread();
         }
     },
 }

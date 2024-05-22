@@ -13,7 +13,6 @@ const app = createApp(App).use(router).use(store).use(ElementPlus).use(Antd);
 Object.keys(Icons).forEach(key => {
     app.component(key, Icons[key])
 })
-app.mount('#app');
 
 axios.interceptors.request.use(
     config => {
@@ -67,16 +66,35 @@ axios.interceptors.response.use((response) => {
 });
 
 // initialize friendmap and likemap
-const res1 = axios.get(url + "/api/posts/record");
-const res2 = axios.get(url + "/api/users/friends");
+async function initLikeMap() {
+    if (store.getters.likeMap == null) {
+        const res = await axios.get(url + "/api/posts/record");
+        if (res.data.code == 0) {
+            const data = res.data.data;
+            store.commit("resetLikeMap", data);
+        }
+    }
+}
 
-Promise.all([res1, res2].filter(x => x != null)).then(responses => {
-    if (responses[0].data.code === 0) {
-        const data = responses[0].data.data;
-        store.commit("resetLikeMap", data);
+async function initFriendMap() {
+    if (store.getters.friendMap == null) {
+        const res = await axios.get(url + "/api/users/friends");
+        if (res.data.code === 0) {
+            const data = res.data.data;
+            store.commit("resetFriendMap", data);
+        }
     }
-    if (responses[1].data.code === 0) {
-        const data = responses[1].data.data;
-        store.commit("resetFriendMap", data);
-    }
-})
+}
+
+async function created() {
+    await initLikeMap();
+    await initFriendMap();
+}
+await created();
+
+app.mount('#app');
+
+export {
+    initLikeMap,
+    initFriendMap,
+}

@@ -144,10 +144,10 @@ export default {
         },
         countUnread() {
             const unread = 
-                this.$store.getters.commentsNotificationManager.getUnreadCount() + 
-                this.$store.getters.likesNotificationManager.getUnreadCount() + 
-                this.$store.getters.followsNotificationManager.getUnreadCount() + 
-                this.$store.getters.chatManager.getUnreadCount();
+                this.$store.getters.commentsNotificationManager.unreadCount + 
+                this.$store.getters.likesNotificationManager.unreadCount + 
+                this.$store.getters.followsNotificationManager.unreadCount + 
+                this.$store.getters.chatManager.unreadCount;
             this.updateChatBadgeCount(unread);
         }
     },
