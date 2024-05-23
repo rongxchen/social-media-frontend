@@ -152,6 +152,7 @@ import SideMenu from "../components/SideMenu.vue";
 import ProfileTabs from "../components/ProfileTabs.vue";
 import FollowsTable from "../components/FollowsTable.vue";
 import axios from "axios";
+import { created } from "@/main.js";
 
 const url = store.getters.url;
 
@@ -316,6 +317,9 @@ export default {
         this.friend.follows.count = this.$store.getters.friendMap.get("follows").size;
         this.friend.followers.count = this.$store.getters.friendMap.get("followers").size;
     },
+    async created() {
+        await created();
+    }
 }
 </script>
 

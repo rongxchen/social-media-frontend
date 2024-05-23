@@ -3,11 +3,13 @@ class BaseManager {
         this.idField = idField;
         this.list = [];
         this.unreadCount = 0;
+        this.inited = false;
     }
 
     init(data) {
         this.list = data;
         this.recountUnread();
+        this.inited = true;
     }
 
     contains(id) {

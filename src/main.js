@@ -86,15 +86,33 @@ async function initFriendMap() {
     }
 }
 
+// init notifications
+async function initNotifications() {
+    if (!store.getters.followsNotificationManager.inited) {
+        await axios.get(url + "/api/notifications/follows?skip=0").then((fol) => {
+            if (fol.data.code == 0) {
+                store.getters.followsNotificationManager.init(fol.data.data);
+            }
+        })    
+    }
+
+    if (!store.getters.commentsNotificationManager.inited) {
+        await axios.get(url + "/api/notifications/comments?skip=0").then((com) => {
+            if (com.data.code == 0) {
+                store.getters.commentsNotificationManager.init(com.data.data);
+            }
+        })
+    }
+}
+
 async function created() {
     await initLikeMap();
     await initFriendMap();
+    await initNotifications();
 }
-await created();
 
 app.mount('#app');
 
 export {
-    initLikeMap,
-    initFriendMap,
+    created,
 }

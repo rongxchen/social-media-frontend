@@ -75,6 +75,7 @@ import FollowNotificationView from "../components/notifications/FollowNotificati
 import { HeartFilled, MessageFilled } from "@ant-design/icons-vue";
 import axios from "axios";
 import store from "@/store";
+import { created } from "@/main.js";
 
 const url = store.getters.url;
 
@@ -219,16 +220,31 @@ export default {
                 this.currView = "chat";
             }
         },
-        async initNotifications() {
-            // const res1 = axios.get(url + "/api/notifications/likes?skip=0");
-            await axios.get(url + "/api/notifications/follows?skip=0").then((res) => {
-                if (res.data.code == 0) {
-                    store.getters.followsNotificationManager.init(res.data.data);
+        // async initNotifications() {
+        //     // const res1 = axios.get(url + "/api/notifications/likes?skip=0");
+        //     await axios.get(url + "/api/notifications/follows?skip=0").then((res) => {
+        //         if (res.data.code == 0) {
+        //             store.getters.followsNotificationManager.init(res.data.data);
+        //         }
+        //     })
+        //     await axios.get(url + "/api/notifications/comments?skip=0").then((res) => {
+        //         if (res.data.code == 0) {
+        //             store.getters.commentsNotificationManager.init(res.data.data);
+        //         }
+        //     })
+        // }
+        initNotifications() {
+            const fol = axios.get(url + "/api/notifications/follows?skip=0");
+            const com = axios.get(url + "/api/notifications/comments?skip=0");
+            
+            Promise.all([fol, com]).then((responses) => {
+                const { fol, com } = responses;
+                console.log(fol, com);
+                if (fol.data.code == 0) {
+                    store.getters.followsNotificationManager.init(fol.data.data);
                 }
-            })
-            await axios.get(url + "/api/notifications/comments?skip=0").then((res) => {
-                if (res.data.code == 0) {
-                    store.getters.commentsNotificationManager.init(res.data.data);
+                if (com.data.code == 0) {
+                    store.getters.commentsNotificationManager.init(com.data.data);
                 }
             })
         }
@@ -241,7 +257,9 @@ export default {
                 this.openChatView(appId);
             }
         })
-        await this.initNotifications();
+    },
+    async created() {
+        await created();
     }
 }
 </script>
