@@ -65,58 +65,33 @@ axios.interceptors.response.use((response) => {
     return Promise.reject(error);
 });
 
-// initialize friendmap and likemap
-async function initLikeMap() {
-    if (store.getters.likeMap == null) {
-        const res = await axios.get(url + "/api/posts/record");
-        if (res.data.code == 0) {
-            const data = res.data.data;
+async function created() {
+    const res1 = axios.get(url + "/api/posts/record");
+    const res2 = axios.get(url + "/api/users/friends");
+    const res3 = axios.get(url + "/api/notifications/likes?skip=0");
+    const res4 = axios.get(url + "/api/notifications/comments?skip=0");
+    const res5 = axios.get(url + "/api/notifications/follows?skip=0");
+
+    await Promise.all([res1, res2, res3, res4, res5]).then((responses) => {
+        const [ record, friend, like, comment, follow ] = responses;
+        if (record.data.code == 0) {
+            const data = record.data.data;
             store.commit("resetLikeMap", data);
         }
-    }
-}
-
-async function initFriendMap() {
-    if (store.getters.friendMap == null) {
-        const res = await axios.get(url + "/api/users/friends");
-        if (res.data.code === 0) {
-            const data = res.data.data;
+        if (friend.data.code == 0) {
+            const data = friend.data.data;
             store.commit("resetFriendMap", data);
         }
-    }
-}
-
-// init notifications
-async function initNotifications() {
-    if (!store.getters.followsNotificationManager.inited) {
-        await axios.get(url + "/api/notifications/follows?skip=0").then((fol) => {
-            if (fol.data.code == 0) {
-                store.getters.followsNotificationManager.init(fol.data.data);
-            }
-        })    
-    }
-
-    if (!store.getters.commentsNotificationManager.inited) {
-        await axios.get(url + "/api/notifications/comments?skip=0").then((com) => {
-            if (com.data.code == 0) {
-                store.getters.commentsNotificationManager.init(com.data.data);
-            }
-        })
-    }
-
-    if (!store.getters.likesNotificationManager.inited) {
-        await axios.get(url + "/api/notifications/likes?skip=0").then((res) => {
-            if (res.data.code == 0) {
-                store.getters.likesNotificationManager.init(res.data.data);
-            }
-        })
-    }
-}
-
-async function created() {
-    await initLikeMap();
-    await initFriendMap();
-    await initNotifications();
+        if (like.data.code == 0 && !store.getters.likesNotificationManager.inited) {
+            store.getters.likesNotificationManager.init(like.data.data);
+        }
+        if (comment.data.code == 0 && !store.getters.commentsNotificationManager.inited) {
+            store.getters.commentsNotificationManager.init(comment.data.data);
+        }
+        if (follow.data.code == 0 && !store.getters.followsNotificationManager.inited) {
+            store.getters.followsNotificationManager.init(follow.data.data);
+        }
+    })
 }
 
 app.mount('#app');
