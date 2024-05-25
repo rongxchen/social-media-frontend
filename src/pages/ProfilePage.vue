@@ -313,13 +313,11 @@ export default {
             this.openFollows("followers");
         },
     },
-    mounted() {
+    async mounted() {
+        await created();
         this.friend.follows.count = this.$store.getters.friendMap.get("follows").size;
         this.friend.followers.count = this.$store.getters.friendMap.get("followers").size;
     },
-    async created() {
-        await created();
-    }
 }
 </script>
 

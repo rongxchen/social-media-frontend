@@ -44,6 +44,11 @@ class BaseManager {
         this.recountUnread();
     }
 
+    pushAllFront(items) {
+        this.list = items.concat(this.list);
+        this.recountUnread();
+    }
+
     markRead(id) {
         for (const item of this.list) {
             if (item[this.idField] == id) {

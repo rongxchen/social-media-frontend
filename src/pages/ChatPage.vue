@@ -48,7 +48,9 @@
             </div>
             <!-- likes page -->
             <div v-else-if="currView == 'likes'">
-                
+                <LikeNotificationViewVue
+                    @close-view="closeView"
+                ></LikeNotificationViewVue>
             </div>
             <!-- follows page -->
             <div v-else-if="currView == 'follows'">
@@ -72,6 +74,7 @@ import ChatListBox from "../components/ChatListBox.vue";
 import ChatView from "../components/ChatView.vue";
 import CommentNotificationView from "../components/notifications/CommentNotificationView.vue";
 import FollowNotificationView from "../components/notifications/FollowNotificationView.vue";
+import LikeNotificationViewVue from "@/components/notifications/LikeNotificationView.vue";
 import { HeartFilled, MessageFilled } from "@ant-design/icons-vue";
 import axios from "axios";
 import store from "@/store";
@@ -89,6 +92,7 @@ export default {
         MessageFilled,
         CommentNotificationView,
         FollowNotificationView,
+        LikeNotificationViewVue,
     },
     data() {
         return {
@@ -206,9 +210,16 @@ export default {
             if (view == "follows") {
                 if (this.$store.getters.followsNotificationManager.getUnreadCount() > 0) {
                     this.$store.getters.followsNotificationManager.list.map(x => x.read = true);
-                    const ids = this.$store.getters.followsNotificationManager.list.map(x => x.notificationId).join(",");
+                    const ids = this.$store.getters.followsNotificationManager.list.filter(x => !x.read).map(x => x.notificationId).join(",");
                     axios.put(url + "/api/notifications/read-all?ids=" + ids);
                     this.$store.getters.followsNotificationManager.recountUnread();
+                }
+            } else if (view == "likes") {
+                if (this.$store.getters.likesNotificationManager.getUnreadCount() > 0) {
+                    this.$store.getters.likesNotificationManager.list.map(x => x.read = true);
+                    const ids = this.$store.getters.likesNotificationManager.list.filter(x => !x.read).map(x => x.notificationId).join(",");
+                    axios.put(url + "/api/notifications/read-all?ids=" + ids);
+                    this.$store.getters.likesNotificationManager.recountUnread();
                 }
             }
         },
@@ -220,36 +231,24 @@ export default {
                 this.currView = "chat";
             }
         },
-        // async initNotifications() {
-        //     // const res1 = axios.get(url + "/api/notifications/likes?skip=0");
-        //     await axios.get(url + "/api/notifications/follows?skip=0").then((res) => {
-        //         if (res.data.code == 0) {
-        //             store.getters.followsNotificationManager.init(res.data.data);
-        //         }
-        //     })
-        //     await axios.get(url + "/api/notifications/comments?skip=0").then((res) => {
-        //         if (res.data.code == 0) {
-        //             store.getters.commentsNotificationManager.init(res.data.data);
-        //         }
-        //     })
-        // }
-        initNotifications() {
-            const fol = axios.get(url + "/api/notifications/follows?skip=0");
-            const com = axios.get(url + "/api/notifications/comments?skip=0");
+        // initNotifications() {
+        //     const fol = axios.get(url + "/api/notifications/follows?skip=0");
+        //     const com = axios.get(url + "/api/notifications/comments?skip=0");
             
-            Promise.all([fol, com]).then((responses) => {
-                const { fol, com } = responses;
-                console.log(fol, com);
-                if (fol.data.code == 0) {
-                    store.getters.followsNotificationManager.init(fol.data.data);
-                }
-                if (com.data.code == 0) {
-                    store.getters.commentsNotificationManager.init(com.data.data);
-                }
-            })
-        }
+        //     Promise.all([fol, com]).then((responses) => {
+        //         const { fol, com } = responses;
+        //         console.log(fol, com);
+        //         if (fol.data.code == 0) {
+        //             store.getters.followsNotificationManager.init(fol.data.data);
+        //         }
+        //         if (com.data.code == 0) {
+        //             store.getters.commentsNotificationManager.init(com.data.data);
+        //         }
+        //     })
+        // },
     },
     async mounted() {
+        await created();
         const appId = this.$route.query.appId;
         this.openChatView(appId);
         this.$watch("$route.query.appId", (appId, oldAppId) => {
@@ -258,9 +257,6 @@ export default {
             }
         })
     },
-    async created() {
-        await created();
-    }
 }
 </script>
 

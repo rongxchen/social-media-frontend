@@ -168,10 +168,7 @@ export default {
             })
         },
     },
-    mounted() {
-        
-    },
-    async created() {
+    async mounted() {
         await created();
     }
 }

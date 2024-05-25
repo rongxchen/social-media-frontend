@@ -103,6 +103,14 @@ async function initNotifications() {
             }
         })
     }
+
+    if (!store.getters.likesNotificationManager.inited) {
+        await axios.get(url + "/api/notifications/likes?skip=0").then((res) => {
+            if (res.data.code == 0) {
+                store.getters.likesNotificationManager.init(res.data.data);
+            }
+        })
+    }
 }
 
 async function created() {

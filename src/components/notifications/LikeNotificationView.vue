@@ -16,8 +16,8 @@
             </el-button>
         </div>
     </div>
-    <div v-if="$store.getters.commentsNotificationManager.list.length > 0" class="comment-notifications">
-        <div v-for="notification of $store.getters.commentsNotificationManager.list" :key="notification">
+    <div v-if="$store.getters.likesNotificationManager.list.length > 0" class="comment-notifications">
+        <div v-for="notification of $store.getters.likesNotificationManager.list" :key="notification">
             <el-card class="comment-notification">
                 <div class="topline">
                     <el-badge is-dot :hidden="notification.read">
@@ -27,21 +27,15 @@
                         <div style="display: flex; justify-content: space-between">
                             <div class="username">
                                 {{ notification.fromUsername }}
-                                <span v-if="true || notification.isAuthor">
-                                    <el-tag effect="plain" size="small" round>author</el-tag>
-                                </span>
                             </div>
                             <el-button @click="deleteOne(notification.notificationId)" type="danger" plain style="border: none;" size="small">
                                 <el-icon><Close /></el-icon>
                             </el-button>
                         </div>
-                        <div class="meta">{{ 'replied to you: ' + notification.dateTime }}</div>
-                        <div @click="openPostDetail(notification)" class="content">{{ notification.commentContent }}</div>
+                        <div class="meta">{{ `${notification.action} your ${notification.itemType}: ` + notification.dateTime }}</div>
+                        <div @click="openPostDetail(notification)" class="content">{{ notification.content }}</div>
                     </div>
                 </div>
-                <!-- <el-card class="post-title">
-                    <div>{{ notification.postTitle }}</div>
-                </el-card> -->
             </el-card>
             <!-- open post detail container -->
             <el-drawer :with-header="false" size="60%" v-model="postDetail.visible" :before-close="() => {this.postDetail.visible = false;}">
@@ -107,8 +101,8 @@ export default {
         },
         async fetchNotifications() {
             this.pagination.loading = true;
-            const skip = this.$store.getters.commentsNotificationManager.list.length;
-            const res = await fetchNotifications("comments", skip);
+            const skip = this.$store.getters.likesNotificationManager.list.length;
+            const res = await fetchNotifications("likes", skip);
             if (res.data.code == 0) {
                 if (res.data.data.length == 0) {
                     this.pagination.hasMore = false;
@@ -116,7 +110,7 @@ export default {
                     this.pagination.placeholder = "no more notifications...";
                     return;
                 }
-                this.$store.getters.commentsNotificationManager.pushAllFront(res.data.data);
+                this.$store.getters.likesNotificationManager.pushAllFront(res.data.data);
             }
             this.pagination.loading = false;
         },
@@ -130,28 +124,28 @@ export default {
             if (!notification.read) {
                 axios.put(url + "/api/notifications/read-all?ids=" + notification.notificationId);
                 notification.read = true;
-                this.$store.getters.commentsNotificationManager.recountUnread();
+                this.$store.getters.likesNotificationManager.recountUnread();
             }
         },
         readAll() {
-            if (this.$store.getters.commentsNotificationManager.getUnreadCount() > 0) {
+            if (this.$store.getters.likesNotificationManager.getUnreadCount() > 0) {
                 const ids = this.$store.getters.commentsNotificationManager.list.filter(x => !x.read).map(x => x.notificationId).join(",");
                 axios.put(url + "/api/notifications/read-all?ids=" + ids);
-                this.$store.getters.commentsNotificationManager.list.map(x => x.read = true);
+                this.$store.getters.likesNotificationManager.list.map(x => x.read = true);
                 this.recountUnread();
             }
         },
         clearAll() {
-            const ids = this.$store.getters.commentsNotificationManager.list.map(x => x.notificationId).join(",");
+            const ids = this.$store.getters.likesNotificationManager.list.map(x => x.notificationId).join(",");
             if (ids.trim() != "") {
                 axios.delete(url + "/api/notifications/clear-all?ids=" + ids);
-                this.$store.getters.commentsNotificationManager.clear();
+                this.$store.getters.likesNotificationManager.clear();
                 this.recountUnread();
             }
         },
         deleteOne(id) {
             axios.delete(url + "/api/notifications/clear-all?ids=" + id);
-            this.$store.getters.commentsNotificationManager.delete(id);
+            this.$store.getters.likesNotificationManager.delete(id);
             this.recountUnread();
         }
     },

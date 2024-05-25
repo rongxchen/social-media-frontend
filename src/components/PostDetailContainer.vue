@@ -73,7 +73,7 @@
                     <!-- expand more -->
                     <div class="expand-more">
                         <a-spin :spinning="pagination.loading">
-                            <el-button @click="fetchComments()" class="expand-more" :disabled="!pagination.hasMore" v-text="pagination.placeholder"></el-button>
+                            <el-button style="border: none;" @click="fetchComments()" class="expand-more" :disabled="!pagination.hasMore" v-text="pagination.placeholder"></el-button>
                         </a-spin>
                     </div>
                 </div>
@@ -197,7 +197,7 @@ export default {
                 hasMore: true,
                 loading: false,
                 placeholder: "expand more...",
-            }
+            },
         }
     },
     methods: {
@@ -345,6 +345,11 @@ export default {
         closeUserDetailContainer() {
             this.userDetail.visible = false;
         },
+        resetPagination() {
+            this.pagination.loading = false;
+            this.pagination.placeholder = "expand more...";
+            this.pagination.hasMore = true;
+        },
     },
     created() {
         this.$watch("currPost", (val) => {
@@ -356,6 +361,7 @@ export default {
                 });
                 this.reply.dialogVisible = false,
                 this.reply.loading= false,
+                this.resetPagination();
                 this.fetchComments();   
             }
         })

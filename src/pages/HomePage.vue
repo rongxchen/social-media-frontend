@@ -53,7 +53,7 @@
                 <!-- expand more button -->
                 <div class="expand-more">
                     <a-spin :spinning="pagination.loading">
-                        <el-button :disabled="!pagination.hasMore" v-text="pagination.placeholder" @click="getPosts()" class="expand-more"></el-button>
+                        <el-button style="border: none;" :disabled="!pagination.hasMore" v-text="pagination.placeholder" @click="getPosts()" class="expand-more"></el-button>
                     </a-spin>
                 </div>
                 <!-- post detail container -->
@@ -163,11 +163,9 @@ export default {
             this.postDetailDrawer.currPost = null;
         },
     },
-    mounted() {
-        this.getPosts();
-    },
-    async created() {
+    async mounted() {
         await created();
+        this.getPosts();
     }
 }
 </script>

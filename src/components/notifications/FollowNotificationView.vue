@@ -51,6 +51,12 @@
                 </div>
             </el-card>
         </div>
+        <!-- expand more -->
+        <div class="expand-more">
+            <a-spin :spinning="pagination.loading">
+                <el-button style="border: none;" @click="fetchNotifications()" class="expand-more" :disabled="!pagination.hasMore" v-text="pagination.placeholder"></el-button>
+            </a-spin>
+        </div>
     </div>
     <div v-else>
         <el-empty description="no notifications..."></el-empty>
@@ -61,6 +67,7 @@
 import store from "@/store";
 import axios from "axios";
 import { follow, unfollow } from "@/utils/methods/follows.js";
+import { fetchNotifications } from "@/utils/methods/notifications.js";
 
 const url = store.getters.url;
 
@@ -69,11 +76,31 @@ export default {
     data() {
         return {
             user: JSON.parse(localStorage.getItem("userInfo")),
+            pagination: {
+                loading: false,
+                hasMore: true,
+                placeholder: "expand more....",
+            },
         }
     },
     methods: {
         closeView() {
             this.$emit("closeView");
+        },
+        async fetchNotifications() {
+            this.pagination.loading = true;
+            const skip = this.$store.getters.followsNotificationManager.list.length;
+            const res = await fetchNotifications("follows", skip);
+            if (res.data.code == 0) {
+                if (res.data.data.length == 0) {
+                    this.pagination.hasMore = false;
+                    this.pagination.loading = false;
+                    this.pagination.placeholder = "no more notifications...";
+                    return;
+                }
+                this.$store.getters.followsNotificationManager.pushAllFront(res.data.data);
+            }
+            this.pagination.loading = false;
         },
         readAll() {
             if (this.$store.getters.followsNotificationManager.getUnreadCount() > 0) {
@@ -137,5 +164,9 @@ export default {
 }
 .follow-button {
     margin-right: 10px;
+}
+.expand-more {
+    width: 100%;
+    margin-top: 10px;
 }
 </style>
