@@ -231,21 +231,6 @@ export default {
                 this.currView = "chat";
             }
         },
-        // initNotifications() {
-        //     const fol = axios.get(url + "/api/notifications/follows?skip=0");
-        //     const com = axios.get(url + "/api/notifications/comments?skip=0");
-            
-        //     Promise.all([fol, com]).then((responses) => {
-        //         const { fol, com } = responses;
-        //         console.log(fol, com);
-        //         if (fol.data.code == 0) {
-        //             store.getters.followsNotificationManager.init(fol.data.data);
-        //         }
-        //         if (com.data.code == 0) {
-        //             store.getters.commentsNotificationManager.init(com.data.data);
-        //         }
-        //     })
-        // },
     },
     async mounted() {
         await created();
