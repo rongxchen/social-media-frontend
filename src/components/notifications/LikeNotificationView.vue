@@ -27,6 +27,22 @@
                         <div style="display: flex; justify-content: space-between">
                             <div class="username">
                                 {{ notification.fromUsername }}
+                                <span style="margin-left: 10px;">
+                                    <span style="color: red;" v-if="notification.action == 'likes'">
+                                        <HeartFilled />
+                                    </span>
+                                    <span style="color: #FFD700;" v-else-if="notification.action == 'favorites'">
+                                        <StarFilled />
+                                    </span>
+                                </span>
+                                <span style="margin-left: 10px;">
+                                    <span  v-if="notification.itemType == 'post'">
+                                        <FileTextOutlined />
+                                    </span>
+                                    <span v-else-if="notification.itemType == 'comment'">
+                                        <CommentOutlined />
+                                    </span>
+                                </span>
                             </div>
                             <el-button @click="deleteOne(notification.notificationId)" type="danger" plain style="border: none;" size="small">
                                 <el-icon><Close /></el-icon>
@@ -63,6 +79,7 @@
 import PostDetailContainer from "../PostDetailContainer.vue";
 import { likePost, favoritePost } from "@/utils/methods/posts.js";
 import { fetchNotifications } from "@/utils/methods/notifications.js";
+import { HeartFilled, StarFilled, CommentOutlined, FileTextOutlined } from "@ant-design/icons-vue";
 import axios from "axios";
 import store from "@/store";
 
@@ -72,6 +89,10 @@ export default {
     emits: ["closeView"],
     components: {
         PostDetailContainer,
+        HeartFilled,
+        StarFilled,
+        CommentOutlined,
+        FileTextOutlined,
     },
     data() {
         return {
