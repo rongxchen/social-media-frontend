@@ -121,6 +121,7 @@
 import axios from "axios";
 import store from "../store";
 import { SHA256 } from "../utils/encryption";
+import { created } from "@/main.js";
 
 const url = store.getters.url;
 
@@ -200,7 +201,7 @@ export default {
                     await axios.post(url + "/api/users/login", {
                         email: this.loginForm.email,
                         password: SHA256(this.loginForm.password)
-                    }).then((res) => {
+                    }).then(async (res) => {
                         if (res.data.code !== 0) {
                             this.$message.error(res.data.message);
                             return;
@@ -208,6 +209,9 @@ export default {
                         localStorage.setItem("accessToken", res.data.data.accessToken);
                         localStorage.setItem("refreshToken", res.data.data.refreshToken);
                         localStorage.setItem("userInfo", JSON.stringify(res.data.data.userInfo));
+                        this.$store.commit("initWs");
+                        this.$store.getters.ws.connect();
+                        await created();
                         this.$router.push("/home");
                     })
                     this.loginLoading = false;

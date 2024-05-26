@@ -132,6 +132,7 @@ export default {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
             localStorage.removeItem("userInfo");
+            this.$store.commit("destroyWs");
             this.$router.push("/login");
         },
         updateChatBadgeCount(newMsgCount) {

@@ -66,32 +66,46 @@ axios.interceptors.response.use((response) => {
 });
 
 async function created() {
-    const res1 = axios.get(url + "/api/posts/record");
-    const res2 = axios.get(url + "/api/users/friends");
-    const res3 = axios.get(url + "/api/notifications/likes?skip=0");
-    const res4 = axios.get(url + "/api/notifications/comments?skip=0");
-    const res5 = axios.get(url + "/api/notifications/follows?skip=0");
+    const res1 = store.getters.likeMap != null ? null : axios.get(url + "/api/posts/record");
+    const res2 = store.getters.friendMap != null ? null : axios.get(url + "/api/users/friends");
+    const res3 = store.getters.likesNotificationManager.inited ? null : axios.get(url + "/api/notifications/likes?skip=0");
+    const res4 = store.getters.commentsNotificationManager.inited ? null : axios.get(url + "/api/notifications/comments?skip=0");
+    const res5 = store.getters.followsNotificationManager.inited ? null : axios.get(url + "/api/notifications/follows?skip=0");
 
-    await Promise.all([res1, res2, res3, res4, res5]).then((responses) => {
+    const axiosList = [res1, res2, res3, res4, res5];
+
+    return Promise.all(axiosList).then((responses) => {
         const [ record, friend, like, comment, follow ] = responses;
-        if (record.data.code == 0) {
+        if (store.getters.likeMap == null && record.data.code == 0) {
             const data = record.data.data;
             store.commit("resetLikeMap", data);
         }
-        if (friend.data.code == 0) {
+        if (store.getters.friendMap == null && friend.data.code == 0) {
             const data = friend.data.data;
             store.commit("resetFriendMap", data);
         }
-        if (like.data.code == 0 && !store.getters.likesNotificationManager.inited) {
+        if (!store.getters.likesNotificationManager.inited && like.data.code == 0) {
             store.getters.likesNotificationManager.init(like.data.data);
         }
-        if (comment.data.code == 0 && !store.getters.commentsNotificationManager.inited) {
+        if (!store.getters.commentsNotificationManager.inited && comment.data.code == 0) {
             store.getters.commentsNotificationManager.init(comment.data.data);
         }
-        if (follow.data.code == 0 && !store.getters.followsNotificationManager.inited) {
+        if (!store.getters.followsNotificationManager.inited && follow.data.code == 0) {
             store.getters.followsNotificationManager.init(follow.data.data);
         }
     })
+}
+
+function reconnectWs() {
+    if (store.getters.ws == null || store.getters.ws.getState() != WebSocket.OPEN) {
+        store.commit("initWs");
+        store.getters.ws.connect();
+    }
+}
+
+if (localStorage.getItem("accessToken")) {
+    reconnectWs();
+    await created();
 }
 
 app.mount('#app');

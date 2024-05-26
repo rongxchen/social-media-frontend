@@ -85,7 +85,6 @@
 import store from "@/store";
 import SideMenu from "../components/SideMenu.vue";
 import axios from "axios";
-import { created } from "@/main.js";
 
 const url = store.getters.url;
 
@@ -168,9 +167,6 @@ export default {
             })
         },
     },
-    async mounted() {
-        await created();
-    }
 }
 </script>
 

@@ -79,7 +79,6 @@ import PostCard from "../components/PostCard.vue";
 import PostDetailContainer from "../components/PostDetailContainer.vue";
 import axios from "axios";
 import { likePost, deletePost, favoritePost } from "@/utils/methods/posts.js";
-import { created } from "@/main.js";
 
 const url = store.getters.url;
 
@@ -164,7 +163,6 @@ export default {
         },
     },
     async mounted() {
-        await created();
         this.getPosts();
     }
 }

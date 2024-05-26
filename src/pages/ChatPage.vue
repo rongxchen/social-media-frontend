@@ -78,7 +78,6 @@ import LikeNotificationViewVue from "@/components/notifications/LikeNotification
 import { HeartFilled, MessageFilled } from "@ant-design/icons-vue";
 import axios from "axios";
 import store from "@/store";
-import { created } from "@/main.js";
 
 const url = store.getters.url;
 
@@ -209,16 +208,16 @@ export default {
             this.currView = view;
             if (view == "follows") {
                 if (this.$store.getters.followsNotificationManager.getUnreadCount() > 0) {
-                    this.$store.getters.followsNotificationManager.list.map(x => x.read = true);
                     const ids = this.$store.getters.followsNotificationManager.list.filter(x => !x.read).map(x => x.notificationId).join(",");
                     axios.put(url + "/api/notifications/read-all?ids=" + ids);
+                    this.$store.getters.followsNotificationManager.list.map(x => x.read = true);
                     this.$store.getters.followsNotificationManager.recountUnread();
                 }
             } else if (view == "likes") {
                 if (this.$store.getters.likesNotificationManager.getUnreadCount() > 0) {
-                    this.$store.getters.likesNotificationManager.list.map(x => x.read = true);
                     const ids = this.$store.getters.likesNotificationManager.list.filter(x => !x.read).map(x => x.notificationId).join(",");
                     axios.put(url + "/api/notifications/read-all?ids=" + ids);
+                    this.$store.getters.likesNotificationManager.list.map(x => x.read = true);
                     this.$store.getters.likesNotificationManager.recountUnread();
                 }
             }
@@ -233,7 +232,6 @@ export default {
         },
     },
     async mounted() {
-        await created();
         const appId = this.$route.query.appId;
         this.openChatView(appId);
         this.$watch("$route.query.appId", (appId, oldAppId) => {
