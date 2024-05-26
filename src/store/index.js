@@ -63,7 +63,6 @@ export default createStore({
     initWs(state) {
       const wsUrl = state.wsUrl + "/ws/chat";
       state.ws = new WebsocketUtil(wsUrl, (msg) => {
-        console.log(msg);
         if (msg == "token expired") {
           ElNotification({
             message: "token expired, please login again",
